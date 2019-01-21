@@ -23,11 +23,11 @@
  */
 package org.jmxtrans.agent;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
 import org.jmxtrans.agent.graphite.GraphiteMetricMessageBuilder;
 import org.junit.Test;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Kristoffer Erlandsson
@@ -48,7 +48,7 @@ public class GraphiteMetricMessageBuilderTest {
         assertThat(msg, startsWith("servers."));
         assertThat(msg, endsWith(" 2 11"));
     }
-    
+
     @Test
     public void trueIsConvertedToOne() {
         GraphiteMetricMessageBuilder builder = new GraphiteMetricMessageBuilder("foo.");

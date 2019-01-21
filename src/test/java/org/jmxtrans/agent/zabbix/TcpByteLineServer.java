@@ -23,6 +23,8 @@
  */
 package org.jmxtrans.agent.zabbix;
 
+import org.junit.rules.ExternalResource;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
@@ -32,169 +34,167 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.junit.rules.ExternalResource;
-
 /**
  * A server that listens on a TCP port and remembers received plain byte arrays.
  * Used to test the {@link ZabbixTcpOutputWriter}.
  * Can be used as a JUnit rule for automatic start/stop:
- * 
+ * <p>
  * <pre>{@code @Rule
  * public TcpByteLineServer server = new TcpByteLineServer();
  * }</pre>
- * 
+ *
  * @author Steve McDuff
  */
 public class TcpByteLineServer extends ExternalResource {
 
-	private final ServerSocket ss;
-	private final ExecutorService executor = Executors.newCachedThreadPool();
-	private final List<SocketReader> socketReaders = new CopyOnWriteArrayList<>();
-	private final List<byte[]> receivedLines = new CopyOnWriteArrayList<>();
+    private final ServerSocket ss;
+    private final ExecutorService executor = Executors.newCachedThreadPool();
+    private final List<SocketReader> socketReaders = new CopyOnWriteArrayList<>();
+    private final List<byte[]> receivedLines = new CopyOnWriteArrayList<>();
 
-	/**
-	 * Starts the server on the supplied port.
-	 */
-	public TcpByteLineServer(int port) {
-		try {
-			ss = new ServerSocket(port);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    /**
+     * Starts the server on the supplied port.
+     */
+    public TcpByteLineServer(int port) {
+        try {
+            ss = new ServerSocket(port);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	/**
-	 * Starts the server on a random free port.
-	 */
-	public TcpByteLineServer() {
-		this(0);
-	}
+    /**
+     * Starts the server on a random free port.
+     */
+    public TcpByteLineServer() {
+        this(0);
+    }
 
-	/**
-	 * Returns the port the server is listening on.
-	 */
-	public int getPort() {
-		return ss.getLocalPort();
-	}
+    /**
+     * Returns the port the server is listening on.
+     */
+    public int getPort() {
+        return ss.getLocalPort();
+    }
 
-	/**
-	 * Returns all lines that this server has received.
-	 */
-	public List<byte[]> getReceivedLines() {
-		return receivedLines;
-	}
+    /**
+     * Returns all lines that this server has received.
+     */
+    public List<byte[]> getReceivedLines() {
+        return receivedLines;
+    }
 
-	/**
-	 * Disconnect all clients that are connected.
-	 */
-	public void disconnectAllClients() {
-		for (SocketReader socketReader : socketReaders) {
-			socketReader.disconnect();
-		}
-		socketReaders.clear();
-	}
-	
-	/**
-	 * Starts the server, i.e., starts listening.
-	 */
-	public void start() {
-		executor.execute(acceptor);
-	}
-	
-	/**
-	 * Disconnects all clients and stops listening.
-	 */
-	public void stop() {
-		for (SocketReader reader : socketReaders) {
-			reader.disconnect();
-		}
-		try {
-			ss.close();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-		executor.shutdownNow();
-	}
+    /**
+     * Disconnect all clients that are connected.
+     */
+    public void disconnectAllClients() {
+        for (SocketReader socketReader : socketReaders) {
+            socketReader.disconnect();
+        }
+        socketReaders.clear();
+    }
 
-	@Override
-	protected void before() throws Throwable {
-		start();
-	}
+    /**
+     * Starts the server, i.e., starts listening.
+     */
+    public void start() {
+        executor.execute(acceptor);
+    }
 
-	@Override
-	protected void after() {
-		stop();
-	}
-	
-	public byte[] readResponse;
+    /**
+     * Disconnects all clients and stops listening.
+     */
+    public void stop() {
+        for (SocketReader reader : socketReaders) {
+            reader.disconnect();
+        }
+        try {
+            ss.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        executor.shutdownNow();
+    }
+
+    @Override
+    protected void before() throws Throwable {
+        start();
+    }
+
+    @Override
+    protected void after() {
+        stop();
+    }
+
+    public byte[] readResponse;
 
 
-	private Runnable acceptor = new Runnable() {
-		@Override
+    private Runnable acceptor = new Runnable() {
+        @Override
         public void run() {
-			while (!Thread.interrupted()) {
-				try {
-					Socket accept = ss.accept();
-					SocketReader reader = new SocketReader(accept);
-					socketReaders.add(reader);
-					executor.execute(reader);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-	};
+            while (!Thread.interrupted()) {
+                try {
+                    Socket accept = ss.accept();
+                    SocketReader reader = new SocketReader(accept);
+                    socketReaders.add(reader);
+                    executor.execute(reader);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
 
-	private class SocketReader implements Runnable {
+    private class SocketReader implements Runnable {
 
-		private final Socket socket;
-		private final InputStream is;
+        private final Socket socket;
+        private final InputStream is;
 
-		public SocketReader(Socket socket) {
-			this.socket = socket;
-			try {
-				is = socket.getInputStream();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
+        public SocketReader(Socket socket) {
+            this.socket = socket;
+            try {
+                is = socket.getInputStream();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-		public void disconnect() {
-			try {
-				is.close();
-				socket.close();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
+        public void disconnect() {
+            try {
+                is.close();
+                socket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-		@Override
-		public void run() {
-			try {
-				readLoop();
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
+        @Override
+        public void run() {
+            try {
+                readLoop();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
 
-		private void readLoop() throws IOException {
-		    int length = 10000;
-		    
-		    while( true ) {
-	            byte[] readBuffer = new byte[length];
-		        int readSize  = is.read(readBuffer, 0, 10000);
-		        if( readSize == -1 ) {
-		            break;
-		        }
-		        receivedLines.add(readBuffer);
-		        
-		        if( readResponse != null ) {
-		            socket.getOutputStream().write(readResponse);
-		        }
-		        
-		    }
-		}
+        private void readLoop() throws IOException {
+            int length = 10000;
 
-	}
+            while (true) {
+                byte[] readBuffer = new byte[length];
+                int readSize = is.read(readBuffer, 0, 10000);
+                if (readSize == -1) {
+                    break;
+                }
+                receivedLines.add(readBuffer);
+
+                if (readResponse != null) {
+                    socket.getOutputStream().write(readResponse);
+                }
+
+            }
+        }
+
+    }
 
 }

@@ -26,22 +26,14 @@ package org.jmxtrans.agent.util.io;
 import org.jmxtrans.agent.util.logging.Logger;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import java.net.*;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -49,19 +41,14 @@ import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.logging.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 /**
  * @author <a href="mailto:cleclerc@cloudbees.com">Cyrille Le Clerc</a>
  */
 public class IoUtils {
     protected final static Logger logger = Logger.getLogger(IoUtils.class.getName());
 
-    private IoUtils(){}
+    private IoUtils() {
+    }
 
     /**
      * @param filePath can be prefixed by "{@code http://}", "{@code https://}", "{@code file://}". If given value is not prefixed, "{@code file://}" is assumed.
@@ -103,11 +90,11 @@ public class IoUtils {
             if (logger.isLoggable(Level.FINER))
                 logger.fine("Http files not supported: '" + filePath + "' is seen as never modified");
             return 0L;
-        } else if (filePath.toLowerCase().startsWith("file://")){
+        } else if (filePath.toLowerCase().startsWith("file://")) {
             File file;
             try {
                 file = new File(new URI(filePath));
-            } catch (URISyntaxException|RuntimeException e) {
+            } catch (URISyntaxException | RuntimeException e) {
                 throw new IoRuntimeException("Exception parsing '" + filePath + "'", e);
             }
 
@@ -152,9 +139,9 @@ public class IoUtils {
             try {
                 File configurationFile = resource.getFile();
                 return dBuilder.parse(configurationFile);
-            } catch(IoRuntimeException e) {
+            } catch (IoRuntimeException e) {
                 try (InputStream in = resource.getInputStream()) {
-                	return dBuilder.parse(in);
+                    return dBuilder.parse(in);
                 }
             }
         } catch (ParserConfigurationException | SAXException e) {
@@ -199,7 +186,7 @@ public class IoUtils {
 
     }
 
-    public static boolean isFileUrl(URL url){
+    public static boolean isFileUrl(URL url) {
         if (url.getProtocol().equals("file")) {
             return true;
         } else {
@@ -207,7 +194,8 @@ public class IoUtils {
         }
 
     }
-    public static void closeQuietly (URLConnection cnn) {
+
+    public static void closeQuietly(URLConnection cnn) {
         if (cnn == null) {
             return;
         } else if (cnn instanceof HttpURLConnection) {
@@ -216,6 +204,7 @@ public class IoUtils {
             // do nothing
         }
     }
+
     public static void closeQuietly(Closeable closeable) {
         if (closeable == null)
             return;
@@ -305,11 +294,10 @@ public class IoUtils {
         }
         if (!append && destination.length() != source.length()) {
             throw new IOException("Failed to copy content from '" +
-                    source + "' (" + source.length() + "bytes) to '" + destination + "' (" + destination.length() + "). isAppend? " + append );
-        }
-        else if (append && destination.length() <= initialSize ) {
+                    source + "' (" + source.length() + "bytes) to '" + destination + "' (" + destination.length() + "). isAppend? " + append);
+        } else if (append && destination.length() <= initialSize) {
             throw new IOException("Failed to append content from '" +
-                    source + "' (" + source.length() + "bytes) to '" + destination + "' (" + destination.length() + "). isAppend? " + append );
+                    source + "' (" + source.length() + "bytes) to '" + destination + "' (" + destination.length() + "). isAppend? " + append);
         }
 
     }
@@ -344,7 +332,7 @@ public class IoUtils {
         // we only care if 9 and lower exists to move them up a number
         for (int i = maxBackupIndex - 1; i >= 0; i--) {
             String path = destination.getAbsolutePath();
-            path=(i==0)?path:path + "." + i;
+            path = (i == 0) ? path : path + "." + i;
             File f = new File(path);
             if (!f.exists()) continue;
 
@@ -358,11 +346,11 @@ public class IoUtils {
         }
     }
 
-    public static void copy(InputStream in, OutputStream out) throws IOException{
+    public static void copy(InputStream in, OutputStream out) throws IOException {
         byte[] buffer = new byte[1024];
         int length;
         while ((length = in.read(buffer)) >= 0) {
-            out.write(buffer, 0,length);
+            out.write(buffer, 0, length);
         }
     }
 }

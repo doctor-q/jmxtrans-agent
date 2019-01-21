@@ -23,17 +23,16 @@
  */
 package org.jmxtrans.agent.influxdb;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.jmxtrans.agent.testutils.FixedTimeClock;
 import org.jmxtrans.agent.util.time.Clock;
 import org.junit.Rule;
 import org.junit.Test;
 
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 /**
  * @author Kristoffer Erlandsson

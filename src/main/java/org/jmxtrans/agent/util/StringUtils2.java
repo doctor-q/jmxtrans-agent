@@ -63,7 +63,7 @@ public class StringUtils2 {
 
     /**
      * Join given {@code tokens} with given {@code delimiter}.
-     *
+     * <p>
      * Sample: tokens {@code "com", "mycompany, "ecommerce", "server1"} with delimiter {@code "."}
      * returns {@code "com.mycompany.ecommerce.server1"}.
      *
@@ -116,7 +116,7 @@ public class StringUtils2 {
 
     /**
      * Escape all non 'a' to 'z','A' to 'Z', '0' to '9' and '-' with a '_'.
-     *
+     * <p>
      * '.' is escaped with a '_' if {@code escapeDot} is {@code true}.
      *
      * @param str       the string to escape

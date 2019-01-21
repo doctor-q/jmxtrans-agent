@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2010-2013 the original author or authors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -8,10 +8,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -19,7 +19,7 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  */
 package org.jmxtrans.agent;
 
@@ -37,12 +37,12 @@ import java.util.logging.Level;
 
 /**
  * Build a {@linkplain org.jmxtrans.agent.QueryResult#name} from a collected metric ({@linkplain org.jmxtrans.agent.Query}).
- *
+ * <p>
  * Build name must be escaped to be compatible with all {@linkplain org.jmxtrans.agent.OutputWriter}.
  * The approach is to escape non alpha-numeric chars.
- *
+ * <p>
  * Expressions support '#' based keywords (e.g. <code>#hostname#</code>) and with '%' based variables mapped to objectname properties.
- *
+ * <p>
  * Supported '#' based 'functions':
  * <table summary="Functions">
  * <tr>
@@ -105,11 +105,11 @@ public class ResultNameStrategyImpl implements ResultNameStrategy {
      */
     public ResultNameStrategyImpl() {
         expressionLanguageEngine = new ExpressionLanguageEngineImpl();
-	}
+    }
 
     public ResultNameStrategyImpl(ExpressionLanguageEngine expressionLanguageEngine) {
         this.expressionLanguageEngine = expressionLanguageEngine;
-	}
+    }
 
     @Nonnull
     @Override
@@ -118,10 +118,10 @@ public class ResultNameStrategyImpl implements ResultNameStrategy {
         if (query.getResultAlias() == null) {
             result = escapeObjectName(objectName);
             result += "." + attribute;
-            if(compositeDataKey != null) {
-                result+= "." + compositeDataKey;
+            if (compositeDataKey != null) {
+                result += "." + compositeDataKey;
             }
-            if(position != null) {
+            if (position != null) {
                 result += "_" + position;
             }
         } else {
@@ -132,7 +132,7 @@ public class ResultNameStrategyImpl implements ResultNameStrategy {
 
     /**
      * Transforms an {@linkplain javax.management.ObjectName} into a plain {@linkplain String} only composed of ('a' to 'Z', 'A' to 'Z', '_').
-     *
+     * <p>
      * '_' is the escape char for not compliant chars.
      */
     protected String escapeObjectName(@Nonnull ObjectName objectName) {

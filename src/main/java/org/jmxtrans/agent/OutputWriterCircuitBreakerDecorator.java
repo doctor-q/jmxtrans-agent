@@ -54,7 +54,7 @@ public class OutputWriterCircuitBreakerDecorator implements OutputWriter {
     }
 
     @Override
-    public void postConstruct(Map<String, String> settings) {
+    public void postConstruct(@Nonnull Map<String, String> settings) {
         enabled = getBoolean(settings, SETTING_ENABLED, true);
         delegate.postConstruct(settings);
     }
@@ -99,7 +99,7 @@ public class OutputWriterCircuitBreakerDecorator implements OutputWriter {
     }
 
     @Override
-    public void writeInvocationResult(String invocationName, Object value) throws IOException {
+    public void writeInvocationResult(@Nonnull String invocationName, Object value) throws IOException {
         if (isDisabled()) {
             return;
         }

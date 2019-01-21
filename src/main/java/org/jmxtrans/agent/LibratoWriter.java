@@ -28,6 +28,7 @@ import org.jmxtrans.agent.util.ConfigurationUtils;
 import org.jmxtrans.agent.util.StandardCharsets2;
 import org.jmxtrans.agent.util.StringUtils2;
 
+import javax.annotation.Nonnull;
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -55,7 +56,7 @@ public class LibratoWriter extends AbstractOutputWriter implements OutputWriter 
     private final AtomicInteger exceptionCounter = new AtomicInteger();
 
     @Override
-    public synchronized void postConstruct(Map<String, String> settings) {
+    public synchronized void postConstruct(@Nonnull Map<String, String> settings) {
         final String username = ConfigurationUtils.getString(settings, SETTING_USERNAME);
         final String token = ConfigurationUtils.getString(settings, SETTING_TOKEN);
         if (username == null || token == null) {
@@ -81,12 +82,12 @@ public class LibratoWriter extends AbstractOutputWriter implements OutputWriter 
     }
 
     @Override
-    public void writeInvocationResult(String invocationName, Object value) throws IOException {
+    public void writeInvocationResult(@Nonnull String invocationName, Object value) throws IOException {
         writeQueryResult(invocationName, null, value);
     }
 
     @Override
-    public synchronized void writeQueryResult(String metricName, String metricType, Object value) throws IOException {
+    public synchronized void writeQueryResult(@Nonnull String metricName, String metricType, Object value) throws IOException {
         HttpURLConnection urlConnection;
         try {
             urlConnection = (HttpURLConnection) url.openConnection();

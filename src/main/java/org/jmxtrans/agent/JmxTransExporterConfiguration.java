@@ -23,14 +23,13 @@
  */
 package org.jmxtrans.agent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
+import org.w3c.dom.Document;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-import org.w3c.dom.Document;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author <a href="mailto:cleclerc@cloudbees.com">Cyrille Le Clerc</a>
@@ -58,10 +57,9 @@ public class JmxTransExporterConfiguration {
     private Document document;
 
     /**
-     * @param document
-     *            The document used when creating this configuration. Will be used to detect configuration changes in
-     *            the underlying configuration file. No configuration will be read from this document - configuration
-     *            has to be explicitly set with the withXxx methods.
+     * @param document The document used when creating this configuration. Will be used to detect configuration changes in
+     *                 the underlying configuration file. No configuration will be read from this document - configuration
+     *                 has to be explicitly set with the withXxx methods.
      */
     public JmxTransExporterConfiguration(Document document) {
         this.document = document;
@@ -72,15 +70,17 @@ public class JmxTransExporterConfiguration {
     }
 
     public JmxTransExporterConfiguration withQuery(@Nonnull String objectName, @Nonnull List<String> attributes, @Nullable String key,
-                                      @Nullable Integer position, @Nullable String type, @Nullable String resultAlias, @Nullable Integer collectInterval) {
+                                                   @Nullable Integer position, @Nullable String type, @Nullable String resultAlias, @Nullable Integer collectInterval) {
         Query query = new Query(objectName, attributes, key, position, type, resultAlias, this.resultNameStrategy, collectInterval);
         queries.add(query);
         return this;
     }
+
     public JmxTransExporterConfiguration withInvocation(@Nonnull String objectName, @Nonnull String operation, @Nullable String resultAlias, @Nullable Integer collectInterval, @Nullable String type) {
         invocations.add(new Invocation(objectName, operation, new Object[0], new String[0], resultAlias, collectInterval, type));
         return this;
     }
+
     public JmxTransExporterConfiguration withOutputWriter(OutputWriter outputWriter) {
         this.outputWriter = outputWriter;
         return this;
@@ -91,7 +91,7 @@ public class JmxTransExporterConfiguration {
         this.collectIntervalTimeUnit = collectIntervalTimeUnit;
         return this;
     }
-    
+
     public JmxTransExporterConfiguration withConfigReloadInterval(int configReloadInterval) {
         if (configReloadInterval < 0) {
             throw new IllegalArgumentException("configReloadInterval must be >= 0, was: " + configReloadInterval);
@@ -149,10 +149,10 @@ public class JmxTransExporterConfiguration {
     }
 
     public JmxTransExporterConfiguration withDiscoveryQuery(@Nonnull String objectName,
-        @Nonnull List<String> attributes, @Nullable String key, @Nullable Integer position, @Nullable String type,
-        @Nullable String resultAlias, @Nullable Integer collectInterval) {
+                                                            @Nonnull List<String> attributes, @Nullable String key, @Nullable Integer position, @Nullable String type,
+                                                            @Nullable String resultAlias, @Nullable Integer collectInterval) {
         Query query = new DiscoveryQuery(objectName, attributes, key, position, type, resultAlias, this.resultNameStrategy,
-            collectInterval);
+                collectInterval);
         queries.add(query);
         return this;
     }

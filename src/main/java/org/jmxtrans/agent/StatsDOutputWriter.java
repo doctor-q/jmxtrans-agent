@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.List;
@@ -64,7 +63,7 @@ public class StatsDOutputWriter extends AbstractOutputWriter implements OutputWr
     private DatagramChannel channel;
 
     @Override
-    public synchronized void postConstruct(Map<String, String> settings) {
+    public synchronized void postConstruct(@Nonnull Map<String, String> settings) {
         super.postConstruct(settings);
 
         final String host = ConfigurationUtils.getString(settings, SETTING_HOST);
@@ -73,14 +72,13 @@ public class StatsDOutputWriter extends AbstractOutputWriter implements OutputWr
         if (statsType.equals(STATSD_DATADOG)) {
             String tagsStr = ConfigurationUtils.getString(settings, SETTINGS_TAGS, "");
             tags = Tag.tagsFromCommaSeparatedString(tagsStr);
-            tags.add(new Tag("host", ConfigurationUtils.getString(settings, SETTING_HOST_NAMME, getHostName().replaceAll("\\.", "_") )));
+            tags.add(new Tag("host", ConfigurationUtils.getString(settings, SETTING_HOST_NAMME, getHostName().replaceAll("\\.", "_"))));
             metricNamePrefix = ConfigurationUtils.getString(settings, SETTING_ROOT_PREFIX, "java");
         } else if (statsType.equals(STATSD_SYSDIG)) {
             String tagsStr = ConfigurationUtils.getString(settings, SETTINGS_TAGS, "");
             tags = Tag.tagsFromCommaSeparatedString(tagsStr, "=");
             metricNamePrefix = ConfigurationUtils.getString(settings, SETTING_ROOT_PREFIX, getHostName().replaceAll("\\.", "_"));
-        }
-        else {
+        } else {
             metricNamePrefix = ConfigurationUtils.getString(settings, SETTING_ROOT_PREFIX, getHostName().replaceAll("\\.", "_"));
         }
 
@@ -126,13 +124,12 @@ public class StatsDOutputWriter extends AbstractOutputWriter implements OutputWr
     }
 
     @Override
-    public void writeInvocationResult(String invocationName, Object value) throws IOException {
+    public void writeInvocationResult(@Nonnull String invocationName, Object value) throws IOException {
         writeQueryResult(invocationName, null, value);
     }
 
     @Override
-    public synchronized void writeQueryResult(String metricName, String metricType, Object value) throws IOException
-    {
+    public synchronized void writeQueryResult(@Nonnull String metricName, String metricType, Object value) throws IOException {
         //DataDog statsd with tags (https://docs.datadoghq.com/guides/dogstatsd/),
         // metric.name:value|type|@sample_rate|#tag1:value,tag2
         //Sysdig metric tags (https://support.sysdig.com/hc/en-us/articles/204376099-Metrics-integrations-StatsD-)

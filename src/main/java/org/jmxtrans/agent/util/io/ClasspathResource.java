@@ -23,13 +23,11 @@
 
 package org.jmxtrans.agent.util.io;
 
+import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-
-import javax.annotation.Nonnull;
 
 /**
  * {@link Resource} for {@code classpath://} path.
@@ -43,9 +41,9 @@ public class ClasspathResource extends AbstractResource implements Resource {
     private final transient ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
     public ClasspathResource(@Nonnull String path) {
-        if(path.startsWith("classpath://")) {
+        if (path.startsWith("classpath://")) {
             path = path.substring("classpath://".length());
-        } else if (path.startsWith("classpath")){
+        } else if (path.startsWith("classpath")) {
             path = path.substring("classpath:".length());
         }
         this.path = path;

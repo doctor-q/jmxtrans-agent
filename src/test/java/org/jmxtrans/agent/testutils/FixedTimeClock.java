@@ -29,9 +29,9 @@ import org.jmxtrans.agent.util.time.Clock;
  * @author Kristoffer Erlandsson
  */
 public class FixedTimeClock implements Clock {
-    
+
     private final long fixedTime;
-    
+
     public FixedTimeClock(long fixedTime) {
         this.fixedTime = fixedTime;
     }

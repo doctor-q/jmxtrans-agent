@@ -25,6 +25,6 @@
     <queries>
         <query objectName="java.lang:type=Threading" attribute="ThreadCount" resultAlias="jvm.thread"/>
     </queries>
-    <outputWriter class="org.jmxtrans.agent.ConsoleOutputWriter" />
+    <outputWriter class="org.jmxtrans.agent.ConsoleOutputWriter"/>
     <reloadConfigurationCheckIntervalInSeconds>2</reloadConfigurationCheckIntervalInSeconds>
 </jmxtrans-agent>

@@ -28,7 +28,6 @@ import org.jmxtrans.agent.util.io.IoUtils;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -53,9 +52,9 @@ public class FileOverwriterOutputWriter extends AbstractOutputWriter {
     protected File file = new File(SETTING_FILE_NAME_DEFAULT_VALUE);
     protected Boolean showTimeStamp;
     private static DateFormat dfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    
+
     @Override
-    public synchronized void postConstruct(Map<String, String> settings) {
+    public synchronized void postConstruct(@Nonnull Map<String, String> settings) {
         super.postConstruct(settings);
         dfISO8601.setTimeZone(TimeZone.getTimeZone("GMT"));
         file = new File(getString(settings, SETTING_FILE_NAME, SETTING_FILE_NAME_DEFAULT_VALUE));
@@ -80,18 +79,18 @@ public class FileOverwriterOutputWriter extends AbstractOutputWriter {
     }
 
     @Override
-    public void writeInvocationResult(String invocationName, Object value) throws IOException {
+    public void writeInvocationResult(@Nonnull String invocationName, Object value) throws IOException {
         writeQueryResult(invocationName, null, value);
     }
 
     public synchronized void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value) throws IOException {
         try {
-            if (showTimeStamp){
-                getTemporaryFileWriter().write("["+dfISO8601.format(Calendar.getInstance().getTime()) +"] "+name + " " + value + "\n");
+            if (showTimeStamp) {
+                getTemporaryFileWriter().write("[" + dfISO8601.format(Calendar.getInstance().getTime()) + "] " + name + " " + value + "\n");
             } else {
                 getTemporaryFileWriter().write(name + " " + value + "\n");
             }
-            
+
         } catch (IOException e) {
             releaseTemporaryWriter();
             throw e;

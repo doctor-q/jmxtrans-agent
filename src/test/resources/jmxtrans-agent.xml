@@ -27,7 +27,8 @@
     </invocations>
     <queries>
         <!-- OS -->
-        <query objectName="java.lang:type=OperatingSystem" attribute="SystemLoadAverage" resultAlias="os.systemLoadAverage"/>
+        <query objectName="java.lang:type=OperatingSystem" attribute="SystemLoadAverage"
+               resultAlias="os.systemLoadAverage"/>
 
         <!-- JVM -->
         <query objectName="java.lang:type=Memory" attribute="HeapMemoryUsage" key="used"

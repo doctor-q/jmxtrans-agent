@@ -23,20 +23,20 @@
  */
 package org.jmxtrans.agent.util;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.junit.Test;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Kristoffer Erlandsson
  */
 public class GcdCalculatorTest {
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void emptyList() throws Exception {
         GcdCalculator.gcd(new ArrayList<Long>());
     }
@@ -55,7 +55,7 @@ public class GcdCalculatorTest {
     public void manyNumbers() throws Exception {
         assertThat(GcdCalculator.gcd(Arrays.asList(18l, 27l, 81l, 54l)), equalTo(9l));
     }
-    
+
     @Test
     public void primes() throws Exception {
         assertThat(GcdCalculator.gcd(Arrays.asList(7l, 17l)), equalTo(1l));

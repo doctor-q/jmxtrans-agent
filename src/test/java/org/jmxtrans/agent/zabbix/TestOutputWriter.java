@@ -23,58 +23,52 @@
  */
 package org.jmxtrans.agent.zabbix;
 
+import org.jmxtrans.agent.OutputWriter;
+
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Map;
 
-import org.jmxtrans.agent.OutputWriter;
-
 /**
  * TestOutputWriter
- * 
+ *
  * @author Steve McDuff
  */
 
-public class TestOutputWriter implements OutputWriter
-{
+public class TestOutputWriter implements OutputWriter {
 
     public String lastMetricName;
 
     public Object lastValue;
 
     @Override
-    public void postConstruct(Map<String, String> settings)
-    {
+    public void postConstruct(@Nonnull Map<String, String> settings) {
 
     }
 
     @Override
-    public void preDestroy()
-    {
+    public void preDestroy() {
 
     }
 
     @Override
-    public void preCollect() throws IOException
-    {
+    public void preCollect() throws IOException {
 
     }
 
     @Override
-    public void writeQueryResult(String metricName, String metricType, Object value) throws IOException
-    {
+    public void writeQueryResult(@Nonnull String metricName, String metricType, Object value) throws IOException {
         lastMetricName = metricName;
         lastValue = value;
     }
 
     @Override
-    public void postCollect() throws IOException
-    {
+    public void postCollect() throws IOException {
 
     }
 
     @Override
-    public void writeInvocationResult(String invocationName, Object value) throws IOException
-    {
+    public void writeInvocationResult(@Nonnull String invocationName, Object value) throws IOException {
 
     }
 

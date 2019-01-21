@@ -31,5 +31,5 @@ import javax.management.MBeanServer;
 public interface Collector {
 
     void collectAndExport(MBeanServer mbeanServer, OutputWriter outputWriter);
-    
+
 }

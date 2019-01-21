@@ -24,75 +24,77 @@
 
 package org.jmxtrans.agent;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import org.hamcrest.Matcher;
+import org.jmxtrans.agent.graphite.GraphiteOutputWriterCommonSettings;
+import org.junit.Rule;
+import org.junit.Test;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hamcrest.Matcher;
-import org.jmxtrans.agent.graphite.GraphiteOutputWriterCommonSettings;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * @author Kristoffer Erlandsson
  */
 public class GraphitePlainTextTcpOutputWriterTest {
 
-	@Rule
-	public TcpLineServer tcpLineServer = new TcpLineServer();
+    @Rule
+    public TcpLineServer tcpLineServer = new TcpLineServer();
 
-	@Test
-	public void reconnectsAfterServerClosesConnection() throws Exception {
-		GraphitePlainTextTcpOutputWriter graphiteWriter = new GraphitePlainTextTcpOutputWriter();
-		Map<String, String> config = new HashMap<>();
-		config.put(GraphiteOutputWriterCommonSettings.SETTING_HOST, "127.0.0.1");
-		config.put(GraphiteOutputWriterCommonSettings.SETTING_PORT, "" + tcpLineServer.getPort());
-		graphiteWriter.postConstruct(config);
-		// Write one metric to see it is received
-		writeTestMetric(graphiteWriter);
-		assertEventuallyReceived(tcpLineServer, hasSize(1));
-		// Disconnect the Graphite writer
-		tcpLineServer.disconnectAllClients();
-		waitForErrorToBeDetectedByGraphiteWriter(graphiteWriter);
-		writeTestMetric(graphiteWriter);
-		// Write one metric and verify that it is received
-		writeTestMetric(graphiteWriter);
-		assertEventuallyReceived(tcpLineServer, hasSize(greaterThan(1)));
-	}
+    @Test
+    public void reconnectsAfterServerClosesConnection() throws Exception {
+        GraphitePlainTextTcpOutputWriter graphiteWriter = new GraphitePlainTextTcpOutputWriter();
+        Map<String, String> config = new HashMap<>();
+        config.put(GraphiteOutputWriterCommonSettings.SETTING_HOST, "127.0.0.1");
+        config.put(GraphiteOutputWriterCommonSettings.SETTING_PORT, "" + tcpLineServer.getPort());
+        graphiteWriter.postConstruct(config);
+        // Write one metric to see it is received
+        writeTestMetric(graphiteWriter);
+        assertEventuallyReceived(tcpLineServer, hasSize(1));
+        // Disconnect the Graphite writer
+        tcpLineServer.disconnectAllClients();
+        waitForErrorToBeDetectedByGraphiteWriter(graphiteWriter);
+        writeTestMetric(graphiteWriter);
+        // Write one metric and verify that it is received
+        writeTestMetric(graphiteWriter);
+        assertEventuallyReceived(tcpLineServer, hasSize(greaterThan(1)));
+    }
 
-	private void waitForErrorToBeDetectedByGraphiteWriter(GraphitePlainTextTcpOutputWriter writer) {
-		for (int i = 0; i < 10; i++) {
-			try {
-				writer.writeQueryResult("foo", null, 1);
-				writer.postCollect();
-				Thread.sleep(20);
-			} catch (Exception e) {
-				return;
-			}
-		}
-		fail("No error ocurred after closing server!");
-	}
+    private void waitForErrorToBeDetectedByGraphiteWriter(GraphitePlainTextTcpOutputWriter writer) {
+        for (int i = 0; i < 10; i++) {
+            try {
+                writer.writeQueryResult("foo", null, 1);
+                writer.postCollect();
+                Thread.sleep(20);
+            } catch (Exception e) {
+                return;
+            }
+        }
+        fail("No error ocurred after closing server!");
+    }
 
-	private void writeTestMetric(GraphitePlainTextTcpOutputWriter writer) {
-		try {
-			writer.writeQueryResult("foo", null, 1);
-			writer.postCollect();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+    private void writeTestMetric(GraphitePlainTextTcpOutputWriter writer) {
+        try {
+            writer.writeQueryResult("foo", null, 1);
+            writer.postCollect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-	public void assertEventuallyReceived(TcpLineServer server, Matcher<Collection<? extends Object>> matcher)
-			throws Exception {
-		for (int i = 0; i < 100; i++) {
-			if (matcher.matches(server.getReceivedLines())) {
-				return;
-			}
-			Thread.sleep(10);
-		}
-		assertThat(server.getReceivedLines(), matcher);
-	}
+    public void assertEventuallyReceived(TcpLineServer server, Matcher<Collection<? extends Object>> matcher)
+            throws Exception {
+        for (int i = 0; i < 100; i++) {
+            if (matcher.matches(server.getReceivedLines())) {
+                return;
+            }
+            Thread.sleep(10);
+        }
+        assertThat(server.getReceivedLines(), matcher);
+    }
 }

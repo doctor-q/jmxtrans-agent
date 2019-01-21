@@ -28,13 +28,12 @@ import org.jmxtrans.agent.util.io.IoRuntimeException;
 import org.jmxtrans.agent.util.io.Resource;
 import org.jmxtrans.agent.util.io.ResourceFactory;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
-import javax.annotation.Nonnull;
 
 /**
  * {@link PropertiesLoader} based on a {@link Resource}.

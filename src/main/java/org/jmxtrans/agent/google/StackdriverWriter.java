@@ -46,13 +46,13 @@ public class StackdriverWriter extends AbstractOutputWriter implements OutputWri
 
     @Override
     public void writeQueryResult(@Nonnull String name, @Nullable String type, @Nullable Object value) {
-        if (null!=writer)
-            writer.writeQueryResult(name,type,value);
+        if (null != writer)
+            writer.writeQueryResult(name, type, value);
     }
 
     @Override
     public void writeInvocationResult(@Nonnull String invocationName, @Nullable Object value) throws IOException {
-        if (null!=writer)
-            writer.writeQueryResult(invocationName,"GAUGE:1",value);
+        if (null != writer)
+            writer.writeQueryResult(invocationName, "GAUGE:1", value);
     }
 }

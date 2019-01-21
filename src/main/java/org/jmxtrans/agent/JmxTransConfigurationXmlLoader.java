@@ -23,16 +23,6 @@
  */
 package org.jmxtrans.agent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
-
 import org.jmxtrans.agent.properties.NoPropertiesSourcePropertiesLoader;
 import org.jmxtrans.agent.properties.PropertiesLoader;
 import org.jmxtrans.agent.util.Preconditions2;
@@ -46,6 +36,10 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 import javax.annotation.Nonnull;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
 
 /**
  * XML configuration parser.
@@ -64,7 +58,7 @@ public class JmxTransConfigurationXmlLoader implements JmxTransConfigurationLoad
     private ExpressionLanguageEngine expressionLanguageEngine;
 
     public JmxTransConfigurationXmlLoader(@Nonnull Resource configurationResource, @Nonnull PropertiesLoader propertiesLoader,
-			@Nonnull ExpressionLanguageEngine expressionLanguageEngine) {
+                                          @Nonnull ExpressionLanguageEngine expressionLanguageEngine) {
         this.configurationResource = Preconditions2.checkNotNull(configurationResource, "configurationResource can not be null");
         this.propertiesLoader = Preconditions2.checkNotNull(propertiesLoader, "propertiesLoader can not be null");
         this.expressionLanguageEngine = Preconditions2.checkNotNull(expressionLanguageEngine, "expressionLanguageEngine can not be null");
@@ -191,7 +185,7 @@ public class JmxTransConfigurationXmlLoader implements JmxTransConfigurationLoad
             configuration.withQuery(objectName, attributes, key, position, type, resultAlias, collectInterval);
         }
     }
-    
+
     private void buildDiscoveryQueries(Element rootElement, JmxTransExporterConfiguration configuration) {
         NodeList queries = rootElement.getElementsByTagName("discoveryQuery");
         for (int i = 0; i < queries.getLength(); i++) {
@@ -213,7 +207,7 @@ public class JmxTransConfigurationXmlLoader implements JmxTransConfigurationLoad
 
             configuration.withDiscoveryQuery(objectName, attributes, key, position, type, resultAlias, collectInterval);
         }
-    }    
+    }
 
     private List<String> getAttributes(Element queryElement, String objectName) {
         String attribute = queryElement.getAttribute("attribute");

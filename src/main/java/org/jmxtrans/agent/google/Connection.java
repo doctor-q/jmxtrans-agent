@@ -166,7 +166,7 @@ public class Connection {
                 return null;
             }
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Failed to source Access Token from Metadata API : "+ e.getMessage());
+            logger.log(Level.SEVERE, "Failed to source Access Token from Metadata API : " + e.getMessage());
         } finally {
             try {
                 if (in != null) {

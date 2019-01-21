@@ -23,21 +23,19 @@
 
 package org.jmxtrans.agent.util.io;
 
+import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import javax.annotation.Nonnull;
-
 /**
  * Inspired by {@code org.springframework.core.io.AbstractResource}
+ *
  * @author <a href="mailto:cleclerc@cloudbees.com">Cyrille Le Clerc</a>
  */
-public abstract class AbstractResource  implements Resource {
+public abstract class AbstractResource implements Resource {
 
     @Override
     public long lastModified() throws IoRuntimeException {
@@ -82,15 +80,13 @@ public abstract class AbstractResource  implements Resource {
         // Try file existence: can we find the file in the file system?
         try {
             return getFile().exists();
-        }
-        catch (IoRuntimeException ex) {
+        } catch (IoRuntimeException ex) {
             // Fall back to stream existence: can we open the stream?
             try {
                 try (InputStream is = getInputStream()) {
-                	return true;
+                    return true;
                 }
-            }
-            catch (Throwable isEx) {
+            } catch (Throwable isEx) {
                 return false;
             }
         }

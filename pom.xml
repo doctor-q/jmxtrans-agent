@@ -41,13 +41,8 @@
     <tag>HEAD</tag>
   </scm>
   <dependencies>
-    <dependency>
-      <groupId>com.sun</groupId>
-      <artifactId>tools</artifactId>
-      <version>1.4.2</version>
-      <scope>system</scope>
-      <systemPath>${java.home}/../lib/tools.jar</systemPath>
-    </dependency>
+
+    <!--find bugs-->
     <dependency>
       <groupId>com.google.code.findbugs</groupId>
       <artifactId>jsr305</artifactId>
@@ -60,6 +55,8 @@
       <version>3.0.0</version>
       <optional>true</optional>
     </dependency>
+
+    <!--test-->
     <dependency>
       <groupId>joda-time</groupId>
       <artifactId>joda-time</artifactId>
@@ -91,6 +88,12 @@
       <scope>test</scope>
     </dependency>
 
+    <!--elasticsearch-->
+    <dependency>
+      <groupId>io.searchbox</groupId>
+      <artifactId>jest</artifactId>
+      <version>6.3.1</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

@@ -23,13 +23,12 @@
  */
 package org.jmxtrans.agent;
 
-import java.util.concurrent.TimeUnit;
-
 import javax.management.MBeanServer;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Collector that keeps track of when it was last run and which interval it needs to be run at.
- * 
+ *
  * @author Kristoffer Erlandsson
  */
 public class TimeTrackingCollector {

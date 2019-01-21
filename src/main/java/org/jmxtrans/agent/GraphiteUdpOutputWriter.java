@@ -23,8 +23,12 @@
  */
 package org.jmxtrans.agent;
 
-import static org.jmxtrans.agent.graphite.GraphiteOutputWriterCommonSettings.*;
+import org.jmxtrans.agent.graphite.GraphiteMetricMessageBuilder;
+import org.jmxtrans.agent.util.net.HostAndPort;
+import org.jmxtrans.agent.util.time.Clock;
+import org.jmxtrans.agent.util.time.SystemCurrentTimeMillisClock;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -35,14 +39,12 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import org.jmxtrans.agent.graphite.GraphiteMetricMessageBuilder;
-import org.jmxtrans.agent.util.net.HostAndPort;
-import org.jmxtrans.agent.util.time.Clock;
-import org.jmxtrans.agent.util.time.SystemCurrentTimeMillisClock;
+import static org.jmxtrans.agent.graphite.GraphiteOutputWriterCommonSettings.getConfiguredMetricPrefixOrNull;
+import static org.jmxtrans.agent.graphite.GraphiteOutputWriterCommonSettings.getHostAndPort;
 
 /**
  * Output writer for writing to Graphite using UDP.
- * 
+ *
  * @author Kristoffer Erlandsson
  */
 public class GraphiteUdpOutputWriter extends AbstractOutputWriter {
@@ -54,7 +56,7 @@ public class GraphiteUdpOutputWriter extends AbstractOutputWriter {
     private GraphiteMetricMessageBuilder messageBuilder;
 
     @Override
-    public void postConstruct(Map<String, String> settings) {
+    public void postConstruct(@Nonnull Map<String, String> settings) {
         super.postConstruct(settings);
         graphiteServerHostAndPort = getHostAndPort(settings);
         messageBuilder = new GraphiteMetricMessageBuilder(getConfiguredMetricPrefixOrNull(settings));
@@ -65,12 +67,12 @@ public class GraphiteUdpOutputWriter extends AbstractOutputWriter {
     }
 
     @Override
-    public void writeInvocationResult(String invocationName, Object value) throws IOException {
+    public void writeInvocationResult(@Nonnull String invocationName, Object value) throws IOException {
         writeQueryResult(invocationName, null, value);
     }
 
     @Override
-    public void writeQueryResult(String metricName, String metricType, Object value) throws IOException {
+    public void writeQueryResult(@Nonnull String metricName, String metricType, Object value) throws IOException {
         String msg = messageBuilder.buildMessage(metricName, value, TimeUnit.SECONDS.convert(clock.getCurrentTimeMillis(), TimeUnit.MILLISECONDS));
         logMessageIfTraceLoggable(msg);
         tryWriteMsg(msg + "\n");
@@ -107,7 +109,9 @@ public class GraphiteUdpOutputWriter extends AbstractOutputWriter {
                 "}";
     }
 
-    /** Test hook */
+    /**
+     * Test hook
+     */
     void setClock(Clock clock) {
         this.clock = clock;
     }

@@ -25,13 +25,13 @@
     <queries>
         <query objectName="java.lang:type=Threading" attribute="ThreadCount" resultAlias="a"/>
         <query objectName="java.lang:type=Threading" attribute="TotalStartedThreadCount" resultAlias="b"
-        collectIntervalInSeconds="3"/>
+               collectIntervalInSeconds="3"/>
     </queries>
     <invocations>
-        <invocation objectName="java.lang:type=Memory" operation="gc" resultAlias="c" />
+        <invocation objectName="java.lang:type=Memory" operation="gc" resultAlias="c"/>
         <invocation objectName="java.lang:type=Memory" operation="gc" resultAlias="d" collectIntervalInSeconds="5"/>
     </invocations>
-    <outputWriter class="org.jmxtrans.agent.ConsoleOutputWriter" />
+    <outputWriter class="org.jmxtrans.agent.ConsoleOutputWriter"/>
     <reloadConfigurationCheckIntervalInSeconds>2</reloadConfigurationCheckIntervalInSeconds>
     <collectIntervalInSeconds>20</collectIntervalInSeconds>
 </jmxtrans-agent>

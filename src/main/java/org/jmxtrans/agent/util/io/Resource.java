@@ -22,12 +22,11 @@
  */
 package org.jmxtrans.agent.util.io;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-
-import javax.annotation.Nonnull;
 
 /**
  * Inspired by {@code org.springframework.core.io.Resource}.
@@ -38,6 +37,7 @@ public interface Resource {
     /**
      * Return an {@link InputStream}.
      * <p>It is expected that each call creates a <i>fresh</i> stream.
+     *
      * @return the input stream for the underlying resource (must not be {@code null})
      * @throws IoRuntimeException if the stream could not be opened
      */
@@ -54,32 +54,36 @@ public interface Resource {
 
     /**
      * Return a URL handle for this resource.
+     *
      * @throws IoRuntimeException if the resource cannot be resolved as URL,
-     * i.e. if the resource is not available as descriptor
+     *                            i.e. if the resource is not available as descriptor
      */
     @Nonnull
     URL getURL();
 
     /**
      * Return a URI handle for this resource.
+     *
      * @throws IoRuntimeException if the resource cannot be resolved as URI,
-     * i.e. if the resource is not available as descriptor
+     *                            i.e. if the resource is not available as descriptor
      */
     @Nonnull
     URI getURI();
 
     /**
      * Return a File handle for this resource.
+     *
      * @throws IoRuntimeException if the resource cannot be resolved as absolute
-     * file path, i.e. if the resource is not available in a file system
+     *                            file path, i.e. if the resource is not available in a file system
      */
     @Nonnull
     File getFile();
 
     /**
      * Determine the last-modified timestamp for this resource.
+     *
      * @throws IoRuntimeException if the resource cannot be resolved
-     * (in the file system or as some other known physical resource type)
+     *                            (in the file system or as some other known physical resource type)
      */
     long lastModified();
 
@@ -88,6 +92,7 @@ public interface Resource {
      * to be used for error output when working with the resource.
      * <p>Implementations are also encouraged to return this value
      * from their {@code toString} method.
+     *
      * @see Object#toString()
      */
     String getDescription();

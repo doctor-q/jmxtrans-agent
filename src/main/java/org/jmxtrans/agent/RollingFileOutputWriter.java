@@ -24,15 +24,11 @@
 package org.jmxtrans.agent;
 
 import org.jmxtrans.agent.util.io.IoUtils;
-import org.jmxtrans.agent.util.logging.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.*;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -46,13 +42,13 @@ public class RollingFileOutputWriter extends AbstractOutputWriter {
     public final static String SETTING_FILE_NAME = "fileName";
     public final static String SETTING_FILE_NAME_DEFAULT_VALUE = "jmxtrans-agent.data";
     public final static String SETTING_MAX_FILE_SIZE = "maxFileSize";
-    public final static long SETTING_MAX_FILE_SIZE_DEFAULT_VALUE=10;
+    public final static long SETTING_MAX_FILE_SIZE_DEFAULT_VALUE = 10;
     public final static String SETTING_MAX_BACKUP_INDEX = "maxBackupIndex";
     public final static int SETTING_MAX_BACKUP_INDEX_DEFAULT_VALUE = 5;
     public final static String SETTING_SINGLE_LINE = "singleLine";
     public final static boolean SETTING_SINGLE_LINE_DEFAULT_VALUE = false;
     private static DateFormat dfISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    
+
     protected Writer temporaryFileWriter;
     protected File temporaryFile;
     protected File file = new File(SETTING_FILE_NAME_DEFAULT_VALUE);
@@ -62,7 +58,7 @@ public class RollingFileOutputWriter extends AbstractOutputWriter {
     protected boolean firstResult;
 
     @Override
-    public synchronized void postConstruct(Map<String, String> settings) {
+    public synchronized void postConstruct(@Nonnull Map<String, String> settings) {
         super.postConstruct(settings);
         TimeZone tz = TimeZone.getTimeZone("UTC");
         dfISO8601.setTimeZone(tz);
@@ -95,7 +91,7 @@ public class RollingFileOutputWriter extends AbstractOutputWriter {
     }
 
     @Override
-    public void writeInvocationResult(String invocationName, Object value) throws IOException {
+    public void writeInvocationResult(@Nonnull String invocationName, Object value) throws IOException {
         writeQueryResult(invocationName, null, value);
     }
 
@@ -109,7 +105,7 @@ public class RollingFileOutputWriter extends AbstractOutputWriter {
                 }
                 getTemporaryFileWriter().write(name + "=" + value);
             } else {
-                getTemporaryFileWriter().write("["+dfISO8601.format(Calendar.getInstance().getTime()) +"] "+name + " " + value + "\n");
+                getTemporaryFileWriter().write("[" + dfISO8601.format(Calendar.getInstance().getTime()) + "] " + name + " " + value + "\n");
             }
         } catch (IOException e) {
             releaseTemporaryWriter();
@@ -125,7 +121,7 @@ public class RollingFileOutputWriter extends AbstractOutputWriter {
         }
         if (temporaryFile != null) {
             boolean deleted = temporaryFile.delete();
-            if(!deleted) {
+            if (!deleted) {
                 logger.warning("Silently ignore failure to delete " + temporaryFile);
             }
         }
@@ -137,7 +133,7 @@ public class RollingFileOutputWriter extends AbstractOutputWriter {
     public synchronized void preCollect() throws IOException {
         if (singleLine) {
             firstResult = true;
-            getTemporaryFileWriter().write("["+dfISO8601.format(Calendar.getInstance().getTime()) +"] ");
+            getTemporaryFileWriter().write("[" + dfISO8601.format(Calendar.getInstance().getTime()) + "] ");
         }
     }
 

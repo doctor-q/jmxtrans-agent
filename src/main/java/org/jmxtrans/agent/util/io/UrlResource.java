@@ -26,20 +26,13 @@ package org.jmxtrans.agent.util.io;
 import org.jmxtrans.agent.util.Preconditions2;
 import org.jmxtrans.agent.util.logging.Logger;
 
+import javax.annotation.Nonnull;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-
-import javax.annotation.Nonnull;
 
 /**
  * {@link Resource} for {@code http://...}, {@code https://...} or {@code file://...}.

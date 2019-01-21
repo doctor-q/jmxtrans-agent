@@ -23,11 +23,12 @@
  */
 package org.jmxtrans.agent.zabbix;
 
-import static org.jmxtrans.agent.util.ConfigurationUtils.*;
+import org.jmxtrans.agent.util.net.HostAndPort;
 
 import java.util.Map;
 
-import org.jmxtrans.agent.util.net.HostAndPort;
+import static org.jmxtrans.agent.util.ConfigurationUtils.getInt;
+import static org.jmxtrans.agent.util.ConfigurationUtils.getString;
 
 /**
  * Setting keys and default values common for Graphite Output writers.
@@ -40,18 +41,19 @@ public class ZabbixOutputWriterCommonSettings {
     public static final String SETTING_SERVER_NAME = "serverName";
     public static final String SETTING_BATCH_SIZE = "batchSize";
     public static final int SETTING_BATCH_SIZE_DEFAULT_VALUE = 1000;
-    
-    private ZabbixOutputWriterCommonSettings(){}
-    
+
+    private ZabbixOutputWriterCommonSettings() {
+    }
+
     public static HostAndPort getHostAndPort(Map<String, String> settings) {
         return new HostAndPort(getString(settings, SETTING_HOST),
                 getInt(settings, SETTING_PORT, SETTING_PORT_DEFAULT_VALUE));
     }
-    
+
     public static String getConfiguredHostName(Map<String, String> settings) {
         return getString(settings, SETTING_SERVER_NAME, null);
     }
-    
+
     public static int getMetricBatchSize(Map<String, String> settings) {
         return getInt(settings, SETTING_BATCH_SIZE, SETTING_BATCH_SIZE_DEFAULT_VALUE);
     }

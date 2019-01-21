@@ -23,40 +23,39 @@
  */
 package org.jmxtrans.agent;
 
-import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
-
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-
 import org.jmxtrans.agent.util.StringUtils2;
 import org.jmxtrans.agent.util.json.JsonArray;
 import org.jmxtrans.agent.util.json.JsonObject;
 import org.jmxtrans.agent.util.logging.Logger;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+
 /**
  * DiscoveryQuery : Used to discover a list of JMX beans matching a specific naming pattern.
  * Used with the Zabbix server.
- * 
+ * <p>
  * <p>
  * For example, the following discovery rule :
- * 
+ * <p>
  * <pre>
  * {@code}
- *  &lt;discoveryQuery 
- *    objectName="java.lang:type=GarbageCollector,name=*" 
- *    attributes="name,type" 
- *    resultAlias="discovery[garbageCollector]" 
+ *  &lt;discoveryQuery
+ *    objectName="java.lang:type=GarbageCollector,name=*"
+ *    attributes="name,type"
+ *    resultAlias="discovery[garbageCollector]"
  *    collectIntervalInSeconds="300"/&gt;
- *    
+ *
  *  &lt;query objectName="java.lang:type=GarbageCollector,name=*"
  *    attributes="CollectionTime,CollectionCount"
  *    resultAlias="discovery[GarbageCollector.%name%.#attribute#]" /&gt;
  * </pre>
- * 
+ * <p>
  * May yield the following discovery output (formatted for readability) :
- * 
+ * <p>
  * <pre>
  * {@code}
  * {"data":[
@@ -64,52 +63,48 @@ import org.jmxtrans.agent.util.logging.Logger;
  *   {"{#name}":"PS MarkSweep","{#type}":"GarbageCollector"}
  * ]}
  * </pre>
- * 
+ * <p>
  * On the Zabbix side, create a "Discovery Rule" of type "Zabbix trapper"
  * with a "Key" that matches the result alias. You can then create "Item prototypes" that use the values.
- * 
+ * <p>
  * Sample Zabbix configuration that matches the example above :
- * 
+ * <p>
  * <pre>
  * {@code}
- * Discovery rule : 
+ * Discovery rule :
  *   Name : Discover Garbage Collectors
  *   Key : discovery[garbageCollector]
- *   
+ *
  * Item Prototype
  *   Name : Object {#TYPE} named {#NAME}
  *   Key : discovery[{#TYPE}.{#NAME}.CollectionTime]
- * 
+ *
  * Item Prototype
  *   Name : Object {#TYPE} named {#NAME}
  *   Key : discovery[{#TYPE}.{#NAME}.CollectionCount]
- * 
+ *
  * </pre>
- * 
+ * <p>
  * NOTE : It can take a few minutes for Zabbix to enable newly created discovery
  * rules and item prototypes.
- * 
+ *
  * @author Steve McDuff
  */
-public class DiscoveryQuery extends Query
-{
+public class DiscoveryQuery extends Query {
     private final Logger logger = Logger.getLogger(getClass().getName());
 
     public DiscoveryQuery(String objectName, List<String> attributes, String key, Integer position, String type,
-        String resultAlias, ResultNameStrategy resultNameStrategy, Integer collectInterval)
-    {
+                          String resultAlias, ResultNameStrategy resultNameStrategy, Integer collectInterval) {
         super(objectName, attributes, key, position, type, resultAlias, resultNameStrategy, collectInterval);
     }
 
     @Override
-    public void collectAndExport(MBeanServer mbeanServer, OutputWriter outputWriter)
-    {
+    public void collectAndExport(MBeanServer mbeanServer, OutputWriter outputWriter) {
         if (resultNameStrategy == null)
             throw new IllegalStateException(
-                "resultNameStrategy is not defined, query object is not properly initialized");
+                    "resultNameStrategy is not defined, query object is not properly initialized");
 
-        try
-        {
+        try {
             Set<ObjectName> objectNames = mbeanServer.queryNames(objectName, null);
 
             String discoveryResult = formatDiscoveryValue(objectNames);
@@ -117,43 +112,34 @@ public class DiscoveryQuery extends Query
             String resultName = resultNameStrategy.getResultName(this, objectName, null, null, null);
             String type = getType();
             outputWriter.writeQueryResult(resultName, type, discoveryResult);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             logger.log(Level.WARNING, "DiscoveryQuery. Exception collecting " + objectName + "#" + getAttributes() +
-                (key == null ? "" : "#" + key), ex);
+                    (key == null ? "" : "#" + key), ex);
         }
     }
 
-    private String formatDiscoveryValue(Set<ObjectName> objectNames)
-    {
+    private String formatDiscoveryValue(Set<ObjectName> objectNames) {
         JsonObject result = new JsonObject();
         JsonArray data = new JsonArray();
         result.add("data", data);
 
-        for (ObjectName on : objectNames)
-        {
-            try
-            {
+        for (ObjectName on : objectNames) {
+            try {
                 JsonObject discoveredObject = new JsonObject();
-                for (String attribute : attributes)
-                {
+                for (String attribute : attributes) {
                     // Generate the discovered property with the format {"{#NAME}":"value"}
                     String keyProperty = on.getKeyProperty(attribute);
                     // skip nulls
-                    if (keyProperty != null)
-                    {
+                    if (keyProperty != null) {
                         String formattedKey = formatDiscoveryKey(attribute);
                         String formattedValue = formatDiscoveryValue(keyProperty);
                         discoveredObject.add(formattedKey, formattedValue);
                     }
                 }
                 data.add(discoveredObject);
-            }
-            catch (Exception ex)
-            {
+            } catch (Exception ex) {
                 logger.log(Level.WARNING, "DiscoveryQuery.formatDiscoveryValue. Exception collecting " + objectName +
-                    "#" + getAttributes() + (key == null ? "" : "#" + key), ex);
+                        "#" + getAttributes() + (key == null ? "" : "#" + key), ex);
             }
         }
 
@@ -161,8 +147,7 @@ public class DiscoveryQuery extends Query
         return discoveryResult;
     }
 
-    public String formatDiscoveryValue(String keyProperty)
-    {
+    public String formatDiscoveryValue(String keyProperty) {
         // transform the property values to match the way JMXTransAgent 
         // will format them in the default naming strategy.
         StringBuilder builder = new StringBuilder();
@@ -171,8 +156,7 @@ public class DiscoveryQuery extends Query
         return keyProperty;
     }
 
-    private String formatDiscoveryKey(String attribute)
-    {
+    private String formatDiscoveryKey(String attribute) {
         return "{#" + attribute.toUpperCase() + "}";
     }
 

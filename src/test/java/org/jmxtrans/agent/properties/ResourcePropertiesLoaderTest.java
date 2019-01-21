@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2010-2013 the original author or authors
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -8,10 +8,10 @@
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -19,12 +19,12 @@
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  */
 package org.jmxtrans.agent.properties;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import org.jmxtrans.agent.util.io.IoRuntimeException;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,8 +34,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
-import org.jmxtrans.agent.util.io.IoRuntimeException;
-import org.junit.Test;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author Kristoffer Erlandsson
@@ -49,7 +49,7 @@ public class ResourcePropertiesLoaderTest {
         assertThat(properties.size(), equalTo(2));
         assertThat(properties, allOf(hasEntry("foo", "bar"), hasEntry("foobar", "baz")));
     }
-    
+
     @Test
     public void loadFromFileUrl() throws Exception {
         File file = createTempTestFile();
@@ -68,24 +68,24 @@ public class ResourcePropertiesLoaderTest {
         assertThat(properties, hasEntry("test", "testvalue"));
     }
 
-    @Test(expected=IoRuntimeException.class)
+    @Test(expected = IoRuntimeException.class)
     public void loadFromUrlNotFound() throws Exception {
         PropertiesLoader loader = new ResourcePropertiesLoader("file:///zvvfds43423ffDSZVFDSAFSDSDFFDSAFVCX");
         loader.loadProperties();
     }
-    
-    @Test(expected=IoRuntimeException.class)
+
+    @Test(expected = IoRuntimeException.class)
     public void loadFromFileNotFound() throws Exception {
         PropertiesLoader loader = new ResourcePropertiesLoader("/fsdfdsvcvzcfdsjkgljl12341");
         loader.loadProperties();
     }
 
-    @Test(expected=IoRuntimeException.class)
+    @Test(expected = IoRuntimeException.class)
     public void loadFromClasspathNotFound() throws Exception {
         PropertiesLoader loader = new ResourcePropertiesLoader("classpath:fsdfdsvcvzcfdsjkgljl12341");
         loader.loadProperties();
     }
-    
+
 
     private File createTempTestFile() throws IOException, FileNotFoundException {
         Path tmpFile = Files.createTempFile(this.getClass().getSimpleName(), null);

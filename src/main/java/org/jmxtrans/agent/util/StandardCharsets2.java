@@ -32,7 +32,8 @@ import java.nio.charset.Charset;
  */
 public class StandardCharsets2 {
 
-    private StandardCharsets2(){}
+    private StandardCharsets2() {
+    }
 
     public static final Charset UTF_8 = Charset.forName("UTF-8");
     public static final Charset US_ASCII = Charset.forName("US-ASCII");

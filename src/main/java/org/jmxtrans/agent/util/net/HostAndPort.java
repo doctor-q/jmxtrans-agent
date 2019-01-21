@@ -33,7 +33,7 @@ public class HostAndPort {
     private final int port;
 
     public HostAndPort(String host, int port) {
-        if(host == null || host.isEmpty()) {
+        if (host == null || host.isEmpty()) {
             throw new IllegalArgumentException("'host' can not be null or empty");
         }
         this.host = host;

@@ -42,9 +42,9 @@ public interface OutputWriter {
     void preCollect() throws IOException;
 
     /**
-     * @param metricName
+     * @param metricName metric name
      * @param metricType see {@link Query#type}
-     * @param value
+     * @param value metric value
      * @throws IOException
      */
     void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value) throws IOException;

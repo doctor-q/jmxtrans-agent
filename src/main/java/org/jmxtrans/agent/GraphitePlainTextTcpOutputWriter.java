@@ -23,24 +23,26 @@
  */
 package org.jmxtrans.agent;
 
-import static org.jmxtrans.agent.graphite.GraphiteOutputWriterCommonSettings.*;
-import static org.jmxtrans.agent.util.ConfigurationUtils.*;
+import org.jmxtrans.agent.graphite.GraphiteMetricMessageBuilder;
+import org.jmxtrans.agent.util.io.IoUtils;
+import org.jmxtrans.agent.util.net.HostAndPort;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.net.*;
+import java.net.ConnectException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-
-import org.jmxtrans.agent.graphite.GraphiteMetricMessageBuilder;
-import org.jmxtrans.agent.util.io.IoUtils;
-import org.jmxtrans.agent.util.net.HostAndPort;
+import static org.jmxtrans.agent.graphite.GraphiteOutputWriterCommonSettings.*;
+import static org.jmxtrans.agent.util.ConfigurationUtils.getInt;
+import static org.jmxtrans.agent.util.ConfigurationUtils.getString;
 
 /**
  * @author <a href="mailto:cleclerc@cloudbees.com">Cyrille Le Clerc</a>
@@ -58,7 +60,7 @@ public class GraphitePlainTextTcpOutputWriter extends AbstractOutputWriter imple
     private GraphiteMetricMessageBuilder messageBuilder;
 
     @Override
-    public void postConstruct(Map<String, String> settings) {
+    public void postConstruct(@Nonnull Map<String, String> settings) {
         super.postConstruct(settings);
 
         graphiteServerHostAndPort = new HostAndPort(
@@ -152,13 +154,13 @@ public class GraphitePlainTextTcpOutputWriter extends AbstractOutputWriter imple
                 ", metricPathPrefix='" + messageBuilder.getPrefix() + '\'' +
                 '}';
     }
-    
+
     @Override
     public void preDestroy() {
         super.preDestroy();
         releaseGraphiteConnection();
     }
-    
+
     String getMetricPathPrefix() {
         return messageBuilder.getPrefix();
     }

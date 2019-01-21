@@ -6,10 +6,11 @@ import org.jmxtrans.agent.util.logging.Logger;
 public class DynamicallyAgentAttacher {
     private static Logger logger = Logger.getLogger(DynamicallyAgentAttacher.class.getName());
 
-    private DynamicallyAgentAttacher(){}
-    
+    private DynamicallyAgentAttacher() {
+    }
+
     public static void main(String[] args) {
-        if(args.length != 3) {
+        if (args.length != 3) {
             printUsage();
             System.exit(1);
         }

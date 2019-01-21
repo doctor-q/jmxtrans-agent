@@ -23,9 +23,9 @@
  */
 package org.jmxtrans.agent.zabbix;
 
-import javax.annotation.Nullable;
-
 import org.jmxtrans.agent.util.json.JsonObject;
+
+import javax.annotation.Nullable;
 
 /**
  * Generates metric messages to send to graphite instances.
@@ -33,28 +33,26 @@ import org.jmxtrans.agent.util.json.JsonObject;
 public class ZabbixMetricMessageBuilder {
 
     private final String hostName;
-    
+
     /**
-     * @param hostName
-     *            hostname of the zabbix server
+     * @param hostName hostname of the zabbix server
      */
     public ZabbixMetricMessageBuilder(@Nullable String hostName) {
         this.hostName = hostName;
-    } 
-    
-    public String getHostName()
-    {
+    }
+
+    public String getHostName() {
         return hostName;
     }
-    
+
     /**
      * Builds a metric string to send to a Graphite instance.
-     * 
+     *
      * @return The metric json string without trailing newline
      */
     public String buildMessage(String metricName, Object value, long timestamp) {
         String valueToString = "null";
-        if( value != null ) {
+        if (value != null) {
             valueToString = value.toString();
         }
 
@@ -66,6 +64,6 @@ public class ZabbixMetricMessageBuilder {
 
         return jsonValue.toString();
     }
-    
-        
+
+
 }

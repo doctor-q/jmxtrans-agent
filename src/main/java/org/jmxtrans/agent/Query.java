@@ -34,7 +34,10 @@ import javax.management.openmbean.CompositeData;
 import javax.management.openmbean.CompositeType;
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 /**
@@ -52,7 +55,7 @@ public class Query implements Collector {
 
     /**
      * The attribute(s) to retrieve ({@link MBeanServer#getAttribute(javax.management.ObjectName, String)})
-     * 
+     * <p>
      * If empty, will fetch all attributes of the MBean.
      */
     @Nonnull
@@ -133,15 +136,15 @@ public class Query implements Collector {
     private static boolean nullOrEmtpy(String attribute) {
         return attribute == null || attribute.isEmpty();
     }
-    
+
     /**
      * Creates a query that accepts a list of attributes to collect. If the list is empty, all attributes will be collected.
-     * @param collectInterval 
-     * 
+     *
+     * @param collectInterval
      * @see #Query(String, String, String, Integer, String, String, ResultNameStrategy)
      */
     public Query(@Nonnull String objectName, @Nonnull List<String> attributes, @Nullable String key, @Nullable Integer position,
-            @Nullable String type, @Nullable String resultAlias, @Nonnull ResultNameStrategy resultNameStrategy, @Nullable Integer collectInterval) {
+                 @Nullable String type, @Nullable String resultAlias, @Nonnull ResultNameStrategy resultNameStrategy, @Nullable Integer collectInterval) {
         try {
             this.objectName = new ObjectName(Preconditions2.checkNotNull(objectName));
         } catch (MalformedObjectNameException e) {
@@ -243,12 +246,11 @@ public class Query implements Collector {
     }
 
     /**
-     *
      * @param outputWriter
      * @param objectName
-     * @param attribute attribute of the MBean
+     * @param attribute        attribute of the MBean
      * @param compositeDataKey if the MBean value is a {@link CompositeData}, the name of the key (see {@link CompositeData#get(String)})
-     * @param value value
+     * @param value            value
      * @throws IOException
      */
     private void processAttributeValue(@Nonnull OutputWriter outputWriter, @Nonnull ObjectName objectName, @Nonnull String attribute,

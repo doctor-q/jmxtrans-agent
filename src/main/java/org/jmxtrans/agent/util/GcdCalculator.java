@@ -33,7 +33,7 @@ public class GcdCalculator {
 
     /**
      * Finds the greatest common divisor of all numbers in the list.
-     * 
+     *
      * @return the GCD or Long.MAX_VALUE if the list is empty.
      */
     public static long gcd(List<Long> l) {
@@ -45,7 +45,7 @@ public class GcdCalculator {
             gcd = gcd.gcd(BigInteger.valueOf(num));
         }
         return gcd.longValue();
-        
+
     }
 
 }

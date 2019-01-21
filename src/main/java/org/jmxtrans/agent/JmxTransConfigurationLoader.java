@@ -32,11 +32,10 @@ public interface JmxTransConfigurationLoader {
     JmxTransExporterConfiguration loadConfiguration();
 
     /**
-     *
      * @return A <code>Long</code> value representing the time the file was
-     *          last modified, measured in milliseconds since the epoch
-     *          (00:00:00 GMT, January 1, 1970), or {@code 0L} if the
-     *          file does not exist or if an I/O error occurs
+     * last modified, measured in milliseconds since the epoch
+     * (00:00:00 GMT, January 1, 1970), or {@code 0L} if the
+     * file does not exist or if an I/O error occurs
      */
-     long lastModified();
+    long lastModified();
 }

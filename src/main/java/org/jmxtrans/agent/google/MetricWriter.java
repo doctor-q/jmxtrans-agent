@@ -113,7 +113,7 @@ public class MetricWriter {
 
         this.staticLabels.put("hostname", hostname);
 
-        for (Map.Entry<String,String> entry : settings.entrySet()) {
+        for (Map.Entry<String, String> entry : settings.entrySet()) {
             String value = StringUtils2.trimToEmpty(settings.get(entry.getKey()));
             if (StringUtils2.isNullOrEmpty(value) || RESERVED_KEYWORDS.contains(entry.getKey().toLowerCase().trim())) {
                 continue;

@@ -131,6 +131,7 @@ public class StatsDOutputWriterTest {
             writer.writeQueryResult("the.answer", "counter", i);
         }
     }
+
     public class StatsDOutputWriterMock extends StatsDOutputWriter {
         public String receivedStat;
 

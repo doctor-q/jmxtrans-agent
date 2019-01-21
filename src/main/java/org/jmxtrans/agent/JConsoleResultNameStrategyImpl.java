@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Builds names with general rules like JConsole / VisualVM do.
  * i.e. {@code <domain-name>.<property-name><property-name><attribute-name><composite-data-key-name>}
- *
+ * <p>
  * E.g. For objectName = "type:name=metric,value=bar" and attribute "count",
  * it will general resultName = "type.metric.bar.count"
  *
@@ -49,7 +49,7 @@ public class JConsoleResultNameStrategyImpl implements ResultNameStrategy {
     /**
      * Transforms an {@linkplain javax.management.ObjectName} into a plain {@linkplain String}
      * only composed of ('a' to 'Z', 'A' to 'Z', '.', '_') similar to JConsole naming.
-     *
+     * <p>
      * '_' is the escape char for not compliant chars.
      */
     protected String escapeObjectName(@Nonnull ObjectName objectName) {

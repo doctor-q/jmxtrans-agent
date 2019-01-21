@@ -23,11 +23,19 @@
  */
 package org.jmxtrans.agent.influxdb;
 
+import org.jmxtrans.agent.AbstractOutputWriter;
+import org.jmxtrans.agent.util.ConfigurationUtils;
+import org.jmxtrans.agent.util.StandardCharsets2;
+import org.jmxtrans.agent.util.io.IoRuntimeException;
+import org.jmxtrans.agent.util.io.IoUtils;
+import org.jmxtrans.agent.util.time.Clock;
+import org.jmxtrans.agent.util.time.SystemCurrentTimeMillisClock;
+
+import javax.annotation.Nonnull;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -37,19 +45,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.jmxtrans.agent.AbstractOutputWriter;
-import org.jmxtrans.agent.util.ConfigurationUtils;
-import org.jmxtrans.agent.util.StandardCharsets2;
-import org.jmxtrans.agent.util.io.IoRuntimeException;
-import org.jmxtrans.agent.util.io.IoUtils;
-import org.jmxtrans.agent.util.time.Clock;
-import org.jmxtrans.agent.util.time.SystemCurrentTimeMillisClock;
-
 import static org.jmxtrans.agent.util.ConfigurationUtils.getBoolean;
 
 /**
  * Output writer for InfluxDb.
- * 
+ *
  * @author Kristoffer Erlandsson
  */
 public class InfluxDbOutputWriter extends AbstractOutputWriter {
@@ -65,7 +65,7 @@ public class InfluxDbOutputWriter extends AbstractOutputWriter {
     private int readTimeoutMillis;
     private final Clock clock;
     private boolean enabled;
-    public final static String SETTING_ENABLED = "enabled";
+    public static final String SETTING_ENABLED = "enabled";
 
     public InfluxDbOutputWriter() {
         this.clock = new SystemCurrentTimeMillisClock();
@@ -79,7 +79,7 @@ public class InfluxDbOutputWriter extends AbstractOutputWriter {
     }
 
     @Override
-    public void postConstruct(Map<String, String> settings) {
+    public void postConstruct(@Nonnull Map<String, String> settings) {
         enabled = getBoolean(settings, SETTING_ENABLED, true);
         String urlStr = ConfigurationUtils.getString(settings, "url");
         database = ConfigurationUtils.getString(settings, "database");
@@ -105,7 +105,6 @@ public class InfluxDbOutputWriter extends AbstractOutputWriter {
     }
 
     /**
-     *
      * @param urlStr
      * @return url composed with the query string
      */
@@ -129,14 +128,14 @@ public class InfluxDbOutputWriter extends AbstractOutputWriter {
     }
 
     @Override
-    public void writeInvocationResult(String invocationName, Object value) throws IOException {
-        if(!enabled) return;
+    public void writeInvocationResult(@Nonnull String invocationName, Object value) throws IOException {
+        if (!enabled) return;
         writeQueryResult(invocationName, null, value);
     }
 
     @Override
-    public void writeQueryResult(String metricName, String metricType, Object value) throws IOException {
-        if(!enabled) return;
+    public void writeQueryResult(@Nonnull String metricName, String metricType, Object value) throws IOException {
+        if (!enabled) return;
         InfluxMetric metric = InfluxMetricConverter.convertToInfluxMetric(metricName, value, tags,
                 clock.getCurrentTimeMillis());
         batchedMetrics.add(metric);
@@ -144,7 +143,7 @@ public class InfluxDbOutputWriter extends AbstractOutputWriter {
 
     @Override
     public void postCollect() throws IOException {
-        if(!enabled) return;
+        if (!enabled) return;
         String body = convertMetricsToLines(batchedMetrics);
         if (logger.isLoggable(getTraceLevel())) {
             logger.log(getTraceLevel(), "Sending to influx (" + url + "):\n" + body);
@@ -207,13 +206,12 @@ public class InfluxDbOutputWriter extends AbstractOutputWriter {
         }
     }
 
-    private String readResponse(HttpURLConnection conn) throws IOException, UnsupportedEncodingException {
+    private String readResponse(HttpURLConnection conn) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try (InputStream is = conn.getInputStream()) {
             IoUtils.copy(is, baos);
         }
-        String response = new String(baos.toByteArray(), "UTF-8");
-        return response;
+        return new String(baos.toByteArray(), "UTF-8");
     }
 
     private void appendParamIfNotEmptyOrNull(StringBuilder sb, String paramName, String paramValue) {
@@ -227,7 +225,7 @@ public class InfluxDbOutputWriter extends AbstractOutputWriter {
 
     private String convertMetricsToLines(List<InfluxMetric> metrics) {
         StringBuilder sb = new StringBuilder();
-        for (Iterator<InfluxMetric> it = metrics.iterator(); it.hasNext();) {
+        for (Iterator<InfluxMetric> it = metrics.iterator(); it.hasNext(); ) {
             InfluxMetric metric = it.next();
             sb.append(metric.toInfluxFormat());
             if (it.hasNext()) {

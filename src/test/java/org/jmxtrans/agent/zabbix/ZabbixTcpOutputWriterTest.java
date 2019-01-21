@@ -23,29 +23,27 @@
  */
 package org.jmxtrans.agent.zabbix;
 
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertThat;
+import org.hamcrest.Matcher;
+import org.jmxtrans.agent.AbstractOutputWriter;
+import org.junit.Rule;
+import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hamcrest.Matcher;
-import org.jmxtrans.agent.AbstractOutputWriter;
-import org.junit.Rule;
-import org.junit.Test;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertThat;
 
 /**
  * ZabbixTcpOutputWriterTest
- * 
+ *
  * @author Steve McDuff
  */
-public class ZabbixTcpOutputWriterTest
-{
-    public ZabbixTcpOutputWriterTest()
-    {
+public class ZabbixTcpOutputWriterTest {
+    public ZabbixTcpOutputWriterTest() {
         super();
     }
 
@@ -53,8 +51,7 @@ public class ZabbixTcpOutputWriterTest
     public TcpByteLineServer tcpByteServer = new TcpByteLineServer();
 
     @Test
-    public void reconnectsAfterServerClosesConnection() throws Exception
-    {
+    public void reconnectsAfterServerClosesConnection() throws Exception {
         ZabbixTcpOutputWriter zabbixWriter = new ZabbixTcpOutputWriter();
         Map<String, String> config = new HashMap<>();
         config.put(ZabbixOutputWriterCommonSettings.SETTING_HOST, "127.0.0.1");
@@ -74,43 +71,32 @@ public class ZabbixTcpOutputWriterTest
 
     public int value = 1;
 
-    public void switchValue()
-    {
-        if (value < 10)
-        {
+    public void switchValue() {
+        if (value < 10) {
             value += 1;
-        }
-        else
-        {
+        } else {
             value = 1;
         }
     }
 
-    private void writeTestMetric(AbstractOutputWriter writer)
-    {
+    private void writeTestMetric(AbstractOutputWriter writer) {
         switchValue();
-        try
-        {
+        try {
             writer.writeQueryResult("jmxtransagentinputtest", null, value);
             writer.writeQueryResult("second", null, value + 20);
 
             tcpByteServer.readResponse = "ZBXA100000000{\"result\":\"success\"}".getBytes(StandardCharsets.UTF_8);
 
             writer.postCollect();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void assertEventuallyReceived(TcpByteLineServer server, Matcher<Collection<? extends Object>> matcher)
-        throws Exception
-    {
-        for (int i = 0; i < 100; i++)
-        {
-            if (matcher.matches(server.getReceivedLines()))
-            {
+            throws Exception {
+        for (int i = 0; i < 100; i++) {
+            if (matcher.matches(server.getReceivedLines())) {
                 return;
             }
             Thread.sleep(10);

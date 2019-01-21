@@ -23,19 +23,19 @@
  */
 package org.jmxtrans.agent;
 
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-
 import org.jmxtrans.agent.properties.PropertiesLoader;
 import org.jmxtrans.agent.util.io.ResourceFactory;
 import org.junit.Test;
 
 import javax.management.ObjectName;
-
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author <a href="mailto:cleclerc@cloudbees.com">Cyrille Le Clerc</a>
@@ -164,22 +164,22 @@ public class JmxTransConfigurationXmlLoaderTest {
         assertThat(query.getAttributes(), emptyIterable());
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testParseConfigurationAttributeAndAttributesMutuallyExclusive() throws Exception {
         new JmxTransConfigurationXmlLoader(ResourceFactory.newResource("classpath:jmxtrans-attribute-attributes-exclusive-test.xml")).loadConfiguration();
     }
-    
+
     @Test
     public void testParseConfigReload() throws Exception {
         JmxTransExporterConfiguration config = new JmxTransConfigurationXmlLoader(ResourceFactory.newResource("classpath:jmxtrans-config-reload-test.xml")).loadConfiguration();
         assertThat(config.getConfigReloadInterval(), equalTo(2));
-        
+
     }
-    
+
     @Test
     public void testExternalPropertiesSourceIsUsed() throws Exception {
         PropertiesLoader propertiesLoader = new PropertiesLoader() {
-            
+
             @Override
             public Map<String, String> loadProperties() {
                 HashMap<String, String> m = new HashMap<>();
@@ -200,7 +200,7 @@ public class JmxTransConfigurationXmlLoaderTest {
     @Test
     public void testErrorOnLoadingExternalPropertiesDoesNotPropagate() throws Exception {
         PropertiesLoader propertiesLoader = new PropertiesLoader() {
-            
+
             @Override
             public Map<String, String> loadProperties() {
                 throw new RuntimeException("Expected - thrown by test");
@@ -215,7 +215,7 @@ public class JmxTransConfigurationXmlLoaderTest {
         JmxTransExporterConfiguration config = configLoader.build(configLoader);
         assertThat(config.getCollectInterval(), equalTo(222));
     }
-    
+
     @Test
     public void collectIntervalOverrideTest() throws Exception {
         JmxTransExporterConfiguration config = new JmxTransConfigurationXmlLoader(ResourceFactory.newResource("classpath:jmxtrans-collect-interval-override-test.xml")).loadConfiguration();
@@ -231,10 +231,10 @@ public class JmxTransConfigurationXmlLoaderTest {
     public void testExpressionInOutputWriterConfig() throws Exception {
         JmxTransExporterConfiguration config = new JmxTransConfigurationXmlLoader(ResourceFactory.newResource("classpath:jmxtrans-expression-in-output-writer-test.xml")).loadConfiguration();
         OutputWriterCircuitBreakerDecorator circuitBreakerDecorator = (OutputWriterCircuitBreakerDecorator) config.outputWriter;
-        GraphitePlainTextTcpOutputWriter writer = (GraphitePlainTextTcpOutputWriter)circuitBreakerDecorator.delegate;
+        GraphitePlainTextTcpOutputWriter writer = (GraphitePlainTextTcpOutputWriter) circuitBreakerDecorator.delegate;
         assertThat(writer.graphiteServerHostAndPort.getHost(), equalTo(InetAddress.getLocalHost().getHostName()));
     }
-    
+
     Map<String, Query> indexQueriesByResultAlias(Iterable<Query> queries) {
         Map<String, Query> result = new HashMap<>();
         for (Query query : queries) {

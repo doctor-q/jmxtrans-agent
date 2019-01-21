@@ -1,7 +1,5 @@
 package org.jmxtrans.agent;
 
-import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
-import static org.hamcrest.core.StringStartsWith.*;
 import org.jmxtrans.agent.util.io.ClasspathResource;
 import org.jmxtrans.agent.util.io.Resource;
 import org.junit.Test;
@@ -10,6 +8,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 
+import static org.hamcrest.collection.IsArrayContainingInOrder.arrayContaining;
+import static org.hamcrest.core.StringStartsWith.startsWith;
 import static org.junit.Assert.assertThat;
 
 public class ConsoleOutputWriterTest {

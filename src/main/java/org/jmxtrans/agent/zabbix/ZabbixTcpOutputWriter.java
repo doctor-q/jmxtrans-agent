@@ -23,9 +23,13 @@
  */
 package org.jmxtrans.agent.zabbix;
 
-import static org.jmxtrans.agent.util.ConfigurationUtils.getInt;
-import static org.jmxtrans.agent.util.ConfigurationUtils.getString;
+import org.jmxtrans.agent.AbstractOutputWriter;
+import org.jmxtrans.agent.OutputWriter;
+import org.jmxtrans.agent.util.io.IoUtils;
+import org.jmxtrans.agent.util.net.HostAndPort;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.ConnectException;
@@ -36,19 +40,13 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.jmxtrans.agent.AbstractOutputWriter;
-import org.jmxtrans.agent.OutputWriter;
-import org.jmxtrans.agent.util.io.IoUtils;
-import org.jmxtrans.agent.util.net.HostAndPort;
+import static org.jmxtrans.agent.util.ConfigurationUtils.getInt;
+import static org.jmxtrans.agent.util.ConfigurationUtils.getString;
 
 /**
  * @author Steve McDuff
  */
-public class ZabbixTcpOutputWriter extends AbstractOutputWriter implements OutputWriter
-{
+public class ZabbixTcpOutputWriter extends AbstractOutputWriter implements OutputWriter {
 
     private static final int ZABBIX_HEADER_LENGTH = 13;
     public final static String SETTING_SOCKET_CONNECT_TIMEOUT_IN_MILLIS = "socket.connectTimeoutInMillis";
@@ -63,93 +61,79 @@ public class ZabbixTcpOutputWriter extends AbstractOutputWriter implements Outpu
 
     private int printMetricCount = 0;
     private int metricBatchSize;
-    
+
     private boolean failedConnection = false;
 
     @Override
-    public void postConstruct(Map<String, String> settings)
-    {
+    public void postConstruct(@Nonnull Map<String, String> settings) {
         super.postConstruct(settings);
 
         zabbixServerHostAndPort = new HostAndPort(getString(settings, ZabbixOutputWriterCommonSettings.SETTING_HOST),
-            getInt(settings, ZabbixOutputWriterCommonSettings.SETTING_PORT,
-                ZabbixOutputWriterCommonSettings.SETTING_PORT_DEFAULT_VALUE));
+                getInt(settings, ZabbixOutputWriterCommonSettings.SETTING_PORT,
+                        ZabbixOutputWriterCommonSettings.SETTING_PORT_DEFAULT_VALUE));
         messageBuilder = new ZabbixMetricMessageBuilder(
-            ZabbixOutputWriterCommonSettings.getConfiguredHostName(settings));
+                ZabbixOutputWriterCommonSettings.getConfiguredHostName(settings));
         socketConnectTimeoutInMillis = getInt(settings, SETTING_SOCKET_CONNECT_TIMEOUT_IN_MILLIS,
-            SETTING_SOCKET_CONNECT_TIMEOUT_IN_MILLIS_DEFAULT_VALUE);
+                SETTING_SOCKET_CONNECT_TIMEOUT_IN_MILLIS_DEFAULT_VALUE);
 
         metricBatchSize = ZabbixOutputWriterCommonSettings.getMetricBatchSize(settings);
 
         logger.log(getInfoLevel(),
-            "ZabbixTcpOutputWriter is configured with " + zabbixServerHostAndPort + ", serverName=" +
-                messageBuilder.getHostName() + ", socketConnectTimeoutInMillis=" + socketConnectTimeoutInMillis +
-                ", metricBatchSize=" + metricBatchSize);
+                "ZabbixTcpOutputWriter is configured with " + zabbixServerHostAndPort + ", serverName=" +
+                        messageBuilder.getHostName() + ", socketConnectTimeoutInMillis=" + socketConnectTimeoutInMillis +
+                        ", metricBatchSize=" + metricBatchSize);
     }
 
     @Override
-    public void writeInvocationResult(@Nonnull String invocationName, @Nullable Object value) throws IOException
-    {
+    public void writeInvocationResult(@Nonnull String invocationName, @Nullable Object value) throws IOException {
         writeQueryResult(invocationName, null, value);
     }
 
     private byte[] messageHeader = "{\"request\":\"sender data\",\"data\":[".getBytes(StandardCharsets.UTF_8);
     private byte[] comma = ",".getBytes(StandardCharsets.UTF_8);
     private byte[] messageFooter = "]}".getBytes(StandardCharsets.UTF_8);
-    
+
 
     @Override
     public void writeQueryResult(@Nonnull String metricName, @Nullable String type, @Nullable Object value)
-        throws IOException
-    {
+            throws IOException {
         String msg = messageBuilder.buildMessage(metricName, value,
-            TimeUnit.SECONDS.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS));
+                TimeUnit.SECONDS.convert(System.currentTimeMillis(), TimeUnit.MILLISECONDS));
 
-        try
-        {
-            if (logger.isLoggable(getTraceLevel()))
-            {
+        try {
+            if (logger.isLoggable(getTraceLevel())) {
                 logger.log(getTraceLevel(), "Send '" + msg + "' to " + zabbixServerHostAndPort);
             }
 
-            if (printMetricCount == 0)
-            {
+            if (printMetricCount == 0) {
                 // print the header
                 writeMessage(messageHeader);
-            }
-            else
-            {
+            } else {
                 writeMessage(comma);
             }
 
             printMetricCount += 1;
             writeMessage(msg);
 
-            if (printMetricCount >= metricBatchSize)
-            {
-                if (logger.isLoggable(Level.FINE))
-                {
+            if (printMetricCount >= metricBatchSize) {
+                if (logger.isLoggable(Level.FINE)) {
                     logger.fine(
-                        "Reached batch size maximum of " + metricBatchSize + " .Forcing message output to Zabbix.");
+                            "Reached batch size maximum of " + metricBatchSize + " .Forcing message output to Zabbix.");
                 }
                 postCollect();
             }
 
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             logger.log(Level.WARNING,
-                "Exception sending '" + msg + "' of size : " + out.size() + "bytes to " + zabbixServerHostAndPort, e);
+                    "Exception sending '" + msg + "' of size : " + out.size() + "bytes to " + zabbixServerHostAndPort, e);
 
             releaseZabbixConnection();
             throw e;
         }
     }
 
-    private void writeMessage(String msg) throws IOException
-    {
-        if (logger.isLoggable(Level.FINEST))
-        {
+    private void writeMessage(String msg) throws IOException {
+        if (logger.isLoggable(Level.FINEST)) {
             logger.finest("Print : " + msg);
         }
 
@@ -157,82 +141,66 @@ public class ZabbixTcpOutputWriter extends AbstractOutputWriter implements Outpu
         writeMessage(bytes);
     }
 
-    protected void writeMessage(byte[] data) throws IOException
-    {
+    protected void writeMessage(byte[] data) throws IOException {
         out.write(data);
     }
 
-    private void writeZabbixHeader(int length) throws IOException
-    {
+    private void writeZabbixHeader(int length) throws IOException {
         byte[] zabbixHeader = new byte[]
-        { 'Z', 'B', 'X', 'D', '\1', (byte) (length & 0xFF), (byte) ((length >> 8) & 0x00FF),
-            (byte) ((length >> 16) & 0x0000FF), (byte) ((length >> 24) & 0x000000FF), '\0', '\0', '\0', '\0' };
+                {'Z', 'B', 'X', 'D', '\1', (byte) (length & 0xFF), (byte) ((length >> 8) & 0x00FF),
+                        (byte) ((length >> 16) & 0x0000FF), (byte) ((length >> 24) & 0x000000FF), '\0', '\0', '\0', '\0'};
 
         socket.getOutputStream().write(zabbixHeader);
     }
 
-    private void releaseZabbixConnection()
-    {
+    private void releaseZabbixConnection() {
         IoUtils.closeQuietly(out);
         IoUtils.closeQuietly(socket);
     }
 
-    private void ensureZabbixConnection() throws IOException
-    {
+    private void ensureZabbixConnection() throws IOException {
         boolean socketIsValid;
-        try
-        {
+        try {
             socketIsValid = socket != null && socket.isConnected() && socket.isBound() && !socket.isClosed() &&
-                !socket.isInputShutdown() && !socket.isOutputShutdown();
-        }
-        catch (Exception e)
-        {
+                    !socket.isInputShutdown() && !socket.isOutputShutdown();
+        } catch (Exception e) {
             socketIsValid = false;
         }
-        if (!socketIsValid)
-        {
+        if (!socketIsValid) {
             long start = System.currentTimeMillis();
-            try
-            {
+            try {
                 socket = new Socket();
                 socket.setKeepAlive(true);
                 socket.connect(
-                    new InetSocketAddress(zabbixServerHostAndPort.getHost(), zabbixServerHostAndPort.getPort()),
-                    socketConnectTimeoutInMillis);
-            }
-            catch (IOException e)
-            {
+                        new InetSocketAddress(zabbixServerHostAndPort.getHost(), zabbixServerHostAndPort.getPort()),
+                        socketConnectTimeoutInMillis);
+            } catch (IOException e) {
                 ConnectException ce = new ConnectException("Exception connecting to " + zabbixServerHostAndPort);
                 ce.initCause(e);
                 throw ce;
             }
             long end = System.currentTimeMillis();
 
-            if (logger.isLoggable(Level.FINE))
-            {
+            if (logger.isLoggable(Level.FINE)) {
                 logger.fine("Connect time : " + (end - start));
             }
         }
     }
 
     @Override
-    public void postCollect() throws IOException
-    {
-        if (printMetricCount == 0)
-        {
+    public void postCollect() throws IOException {
+        if (printMetricCount == 0) {
             // nothing to print
             return;
         }
 
-        try
-        {
+        try {
             writeMessage(messageFooter);
 
             byte[] byteArray = out.toByteArray();
             out.reset();
 
-            if (logger.isLoggable(Level.FINEST))
-            {
+            if (logger.isLoggable(Level.FINEST)) {
                 String msg = new String(byteArray, StandardCharsets.UTF_8);
                 logger.finest("message : " + msg);
             }
@@ -250,14 +218,11 @@ public class ZabbixTcpOutputWriter extends AbstractOutputWriter implements Outpu
             // Forcing a drop prevents timeout exceptions for subsequent messages.
             releaseZabbixConnection();
             failedConnection = false;
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             // log subsequent failures at a lower log level.
-            if( failedConnection ) {
+            if (failedConnection) {
                 logger.log(Level.FINE, "Exception flushing the stream to " + zabbixServerHostAndPort, e);
-            }
-            else {
+            } else {
                 logger.log(Level.WARNING, "Exception flushing the stream to " + zabbixServerHostAndPort, e);
             }
             releaseZabbixConnection();
@@ -265,29 +230,22 @@ public class ZabbixTcpOutputWriter extends AbstractOutputWriter implements Outpu
         }
     }
 
-    private void drainInputStream() throws IOException
-    {
-        try
-        {
+    private void drainInputStream() throws IOException {
+        try {
             int readSize = socket.getInputStream().read(readBuffer);
-            if (logger.isLoggable(Level.FINE))
-            {
+            if (logger.isLoggable(Level.FINE)) {
 
                 String message = extractZabbixResponseString(readSize, readBuffer);
                 logger.log(Level.FINE, message);
             }
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             logger.log(Level.WARNING, "Failed to read from scoket " + zabbixServerHostAndPort, ex);
         }
     }
 
-    private String extractZabbixResponseString(int readSize, byte[] buffer)
-    {
+    private String extractZabbixResponseString(int readSize, byte[] buffer) {
         String msg = "";
-        if (readSize > ZABBIX_HEADER_LENGTH)
-        {
+        if (readSize > ZABBIX_HEADER_LENGTH) {
             // skip the zabbix header
             msg = new String(buffer, ZABBIX_HEADER_LENGTH, readSize - ZABBIX_HEADER_LENGTH, StandardCharsets.UTF_8);
         }
@@ -295,15 +253,13 @@ public class ZabbixTcpOutputWriter extends AbstractOutputWriter implements Outpu
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return "ZabbixTcpOutputWriter{" + ", " + zabbixServerHostAndPort + ", serverName='" +
-            messageBuilder.getHostName() + '\'' + '}';
+                messageBuilder.getHostName() + '\'' + '}';
     }
 
     @Override
-    public void preDestroy()
-    {
+    public void preDestroy() {
         super.preDestroy();
         releaseZabbixConnection();
     }

@@ -31,13 +31,13 @@ import java.util.Objects;
 
 /**
  * Inspired by Spring Property placeholder mechanism.
- *
+ * <p>
  * Placeholders are delimited by '{' and '}' and support default value with ':'. Sample : '<code>{graphite.host}</code>'
  * or '<code>{graphite.port:2003}</code>'.
- *
+ * <p>
  * If the placeholder is not found in the system properties, it is searched in the environment variables and then
  * converted to underscore delimited upper case and searched in environment variables.
- *
+ * <p>
  * Sample for '<code>{graphite.port:2003}</code>':
  * <ol>
  * <li><code>System.getProperty("graphite.port")</code></li>
@@ -113,7 +113,7 @@ public class PropertyPlaceholderResolver implements Serializable {
      *                     defined and the placeholder must exist
      * @return the resolved property or the default value if the placeholder is not found and the default value is defined. Non null.
      * @throws IllegalStateException if the placeholder is not found and the given <code>defaultValue</code> is not
-     *                              defined (<code>null</code>)
+     *                               defined (<code>null</code>)
      */
     protected String resolvePlaceholder(String property, String defaultValue) throws IllegalStateException {
 

@@ -24,7 +24,6 @@
 package org.jmxtrans.agent;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-
 import org.jmxtrans.agent.properties.NoPropertiesSourcePropertiesLoader;
 import org.jmxtrans.agent.properties.PropertiesLoader;
 import org.jmxtrans.agent.properties.ResourcePropertiesLoader;
@@ -36,7 +35,6 @@ import org.jmxtrans.agent.util.logging.Logger;
 import javax.annotation.Nonnull;
 import javax.management.ObjectInstance;
 import javax.management.ObjectName;
-
 import java.lang.instrument.Instrumentation;
 import java.lang.management.ManagementFactory;
 import java.sql.Timestamp;
@@ -56,7 +54,8 @@ public class JmxTransAgent {
     private static final String PROPERTIES_SYSTEM_PROPERTY_NAME = "jmxtrans.agent.properties.file";
 
 
-    private JmxTransAgent(){}
+    private JmxTransAgent() {
+    }
 
     @SuppressFBWarnings("MS_SHOULD_BE_FINAL")
     public static boolean DIAGNOSTIC = Boolean.valueOf(System.getProperty(JmxTransAgent.class.getName() + ".diagnostic", "false"));
@@ -68,9 +67,9 @@ public class JmxTransAgent {
     public static void premain(final String configFile, Instrumentation inst) {
         final int delayInSecs = Integer.parseInt(System.getProperty("jmxtrans.agent.premain.delay", "0"));
         final boolean waitForCustomMBeanServer =
-            Boolean.parseBoolean(System.getProperty("jmxtrans.agent.premain.waitForCustomMBeanServer"));
+                Boolean.parseBoolean(System.getProperty("jmxtrans.agent.premain.waitForCustomMBeanServer"));
         final int timeoutInSeconds = Integer.parseInt(
-            System.getProperty("jmxtrans.agent.premain.waitForCustomMBeanServer.timeoutInSeconds", "120"));
+                System.getProperty("jmxtrans.agent.premain.waitForCustomMBeanServer.timeoutInSeconds", "120"));
 
         if (delayInSecs > 0) {
             logger.info("jmxtrans agent initialization delayed by " + delayInSecs + " seconds");
@@ -217,6 +216,7 @@ public class JmxTransAgent {
      * Polls every second to see if any {@link javax.management.MBeanServer} have been created
      * by another thread up to {@code timeoutInSeconds}. If interrupted or timed out, returns
      * {@code false}.
+     *
      * @param timeoutInSeconds Maximum number of seconds to wait before giving up.
      * @return {@code true} if found an {@code MBeanServer} within {@code timeoutInSeconds}.
      * {@code false} otherwise.
@@ -241,7 +241,9 @@ public class JmxTransAgent {
         return true;
     }
 
-    /** @see javax.management.MBeanServerFactory */
+    /**
+     * @see javax.management.MBeanServerFactory
+     */
     static private boolean isCustomMBeanServerConfigured() {
         return System.getProperty("javax.management.builder.initial") != null;
     }

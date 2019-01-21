@@ -35,7 +35,7 @@ public class IoRuntimeException extends RuntimeException {
 
     /**
      * This method returns an instance {@link IoRuntimeException}.
-     *
+     * <p>
      * Inspired by {@code com.google.common.base.Throwables#propagate(java.lang.Throwable)}.
      * <pre>
      *     try {
@@ -44,6 +44,7 @@ public class IoRuntimeException extends RuntimeException {
      *         throw IoRuntimeException.propagate(e);
      *     }
      * </pre>
+     *
      * @param e
      */
     public static IoRuntimeException propagate(IOException e) {

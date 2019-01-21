@@ -25,6 +25,7 @@ package org.jmxtrans.agent.util.io;
 
 import org.jmxtrans.agent.util.Preconditions2;
 
+import javax.annotation.Nonnull;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -32,8 +33,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
-
-import javax.annotation.Nonnull;
 
 /**
  * {@link Resource} for {@code path/to/file.txt} resources.

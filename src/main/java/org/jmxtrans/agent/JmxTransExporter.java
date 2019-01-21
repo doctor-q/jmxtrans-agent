@@ -23,23 +23,17 @@
  */
 package org.jmxtrans.agent;
 
+import org.jmxtrans.agent.util.GcdCalculator;
+import org.jmxtrans.agent.util.logging.Logger;
+
+import javax.management.MBeanServer;
 import java.lang.management.ManagementFactory;
-import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
-
-import javax.management.MBeanServer;
-
-import org.jmxtrans.agent.util.GcdCalculator;
-import org.jmxtrans.agent.util.logging.Logger;
 
 /**
  * @author <a href="mailto:cleclerc@cloudbees.com">Cyrille Le Clerc</a>
@@ -149,7 +143,7 @@ public class JmxTransExporter {
                         logger.info("jmxtrans-agent configuration has changed. Reload " + configLoader);
                         if (logger.isLoggable(Level.FINER))
                             logger.finer("Reload lastModified=" + lastModified + " / " + new Timestamp(lastModified) +
-                                ", newLastModified=" + newLastModified + " / " + new Timestamp(newLastModified));
+                                    ", newLastModified=" + newLastModified + " / " + new Timestamp(newLastModified));
 
                         lastModified = newLastModified;
                         stop();

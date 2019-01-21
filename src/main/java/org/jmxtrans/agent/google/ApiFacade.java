@@ -161,7 +161,7 @@ public class ApiFacade {
             }
         } catch (RuntimeException e) {
             JsonObject error = Json.parse(e.getMessage()).asObject();
-            if (error.get("error")!=null && error.get("error").asObject().get("code").asInt() == 404){
+            if (error.get("error") != null && error.get("error").asObject().get("code").asInt() == 404) {
                 logger.info("Metric '" + metricName + "' is not found in the project");
             } else {
                 logger.log(Level.WARNING, "Unable to retrieve metric : " + e.getMessage(), e);

@@ -23,6 +23,7 @@
  */
 package org.jmxtrans.agent;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,14 +45,14 @@ public class OutputWritersChain extends AbstractOutputWriter implements OutputWr
     }
 
     @Override
-    public void writeQueryResult(String metricName, String type, Object value) throws IOException {
+    public void writeQueryResult(@Nonnull String metricName, String type, Object value) throws IOException {
         for (OutputWriter outputWriter : outputWriters) {
             outputWriter.writeQueryResult(metricName, type, value);
         }
     }
 
     @Override
-    public void writeInvocationResult(String invocationName, Object value) throws IOException {
+    public void writeInvocationResult(@Nonnull String invocationName, Object value) throws IOException {
         for (OutputWriter outputWriter : outputWriters) {
             outputWriter.writeInvocationResult(invocationName, value);
         }

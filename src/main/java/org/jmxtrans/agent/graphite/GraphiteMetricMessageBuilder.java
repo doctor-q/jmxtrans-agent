@@ -23,10 +23,9 @@
  */
 package org.jmxtrans.agent.graphite;
 
+import javax.annotation.Nullable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
-import javax.annotation.Nullable;
 
 /**
  * Generates metric messages to send to graphite instances.
@@ -35,27 +34,26 @@ public class GraphiteMetricMessageBuilder {
 
     private static final String DEFAULT_METRIC_PATH_PREFIX_FORMAT = "servers.%s.";
     private final String metricPathPrefix;
-    
+
     /**
-     * @param configuredMetricPathPrefix
-     *            Prefix to add to the metric keys. May be null, in which case servers.your_hostname will be used.
+     * @param configuredMetricPathPrefix Prefix to add to the metric keys. May be null, in which case servers.your_hostname will be used.
      */
     public GraphiteMetricMessageBuilder(@Nullable String configuredMetricPathPrefix) {
         this.metricPathPrefix = buildMetricPathPrefix(configuredMetricPathPrefix);
-    } 
-    
+    }
+
     /**
      * Builds a metric string to send to a Graphite instance.
-     * 
+     *
      * @return The metric string without trailing newline
      */
     public String buildMessage(String metricName, Object value, long timestamp) {
         if (value instanceof Boolean) {
-            return metricPathPrefix + metricName + " " + ((Boolean)value ? 1 : 0) + " " + timestamp;
+            return metricPathPrefix + metricName + " " + ((Boolean) value ? 1 : 0) + " " + timestamp;
         }
         return metricPathPrefix + metricName + " " + value + " " + timestamp;
     }
-    
+
     /**
      * {@link java.net.InetAddress#getLocalHost()} may not be known at JVM startup when the process is launched as a Linux service.
      */
@@ -71,9 +69,9 @@ public class GraphiteMetricMessageBuilder {
         }
         return String.format(DEFAULT_METRIC_PATH_PREFIX_FORMAT, hostname);
     }
-    
+
     public String getPrefix() {
         return metricPathPrefix;
     }
-        
+
 }

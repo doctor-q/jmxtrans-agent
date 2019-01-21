@@ -23,12 +23,12 @@
  */
 package org.jmxtrans.agent;
 
-import static org.junit.Assert.*;
-import static org.hamcrest.Matchers.*;
-
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * @author <a href="mailto:cleclerc@cloudbees.com">Cyrille Le Clerc</a>
@@ -38,9 +38,10 @@ public class PerMinuteSummarizerOutputWriterTest {
     PerMinuteSummarizerOutputWriter writer;
 
     @Before
-    public void before(){
+    public void before() {
         writer = new PerMinuteSummarizerOutputWriter();
     }
+
     @Test
     public void testPerMinute_60s_elapse() throws Exception {
         DateTime previousTime = new DateTime(2013, 01, 01, 14, 01, 31);
@@ -131,7 +132,7 @@ public class PerMinuteSummarizerOutputWriterTest {
     }
 
     @Test
-    public void testGetPreviousResult_returns_last_result(){
+    public void testGetPreviousResult_returns_last_result() {
         DateTime now = new DateTime();
 
         QueryResult expected = new QueryResult("mymetric", 10, now.minusSeconds(65).getMillis());
@@ -143,11 +144,11 @@ public class PerMinuteSummarizerOutputWriterTest {
 
         QueryResult actual = writer.getPreviousQueryResult(currentResult);
 
-        assertThat(actual,is(expected));
+        assertThat(actual, is(expected));
     }
 
     @Test
-    public void testGetPreviousResult_returns_2nd_result(){
+    public void testGetPreviousResult_returns_2nd_result() {
         DateTime now = new DateTime();
 
         writer.storeQueryResult(new QueryResult("mymetric", 10, now.minusSeconds(65).getMillis()));
@@ -159,11 +160,11 @@ public class PerMinuteSummarizerOutputWriterTest {
 
         QueryResult actual = writer.getPreviousQueryResult(currentResult);
 
-        assertThat(actual,is(expected));
+        assertThat(actual, is(expected));
     }
 
     @Test
-    public void testGetPreviousResult_skip_decreasing_result(){
+    public void testGetPreviousResult_skip_decreasing_result() {
         DateTime now = new DateTime();
 
         QueryResult tooHigh = new QueryResult("mymetric", 60, now.minusSeconds(65).getMillis());
@@ -176,6 +177,6 @@ public class PerMinuteSummarizerOutputWriterTest {
 
         QueryResult actual = writer.getPreviousQueryResult(currentResult);
 
-        assertThat(actual,is(expected));
+        assertThat(actual, is(expected));
     }
 }
