@@ -43,8 +43,8 @@ public abstract class AbstractOutputWriter implements OutputWriter {
      * <p>
      * Supported values are {@code INFO}
      */
-    public final static String SETTING_LOG_LEVEL = "logLevel";
-    public final static String SETTING_LOG_LEVEL_DEFAULT_VALUE = "INFO";
+    public static final String SETTING_LOG_LEVEL = "logLevel";
+    public static final String SETTING_LOG_LEVEL_DEFAULT_VALUE = "INFO";
     protected final Logger logger = Logger.getLogger(getClass().getName());
     private Level debugLevel = Level.FINE;
     private Level traceLevel = Level.FINER;
@@ -83,12 +83,6 @@ public abstract class AbstractOutputWriter implements OutputWriter {
     @Override
     public void preCollect() throws IOException {
     }
-
-    @Override
-    public abstract void writeInvocationResult(@Nonnull String invocationName, @Nullable Object value) throws IOException;
-
-    @Override
-    public abstract void writeQueryResult(@Nonnull String metricName, @Nullable String metricType, @Nullable Object value) throws IOException;
 
     /**
      * To workaround the complex configuration of java.util.logging, we tweak the level for "debug style" messages
